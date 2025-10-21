@@ -5,8 +5,9 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UploadOutlined,
+  CustomerServiceOutlined,
 } from '@ant-design/icons';
-import { Button, Layout, Menu, theme } from 'antd';
+import { Button, Layout, Menu, theme, FloatButton } from 'antd';
 import { ContentBrushPen } from '@/components/icons/ContentBrushPen';
 import { BlocksScale } from '@/components/icons/BlocksScale';
 import { Pencil2 } from '@/components/icons/Pencil2';
@@ -17,6 +18,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import HeaderBreadcrumb from '@/components/HeaderBreadcrumb';
+import ChatBot from '@/components/ChatBot';
 
 const { Header, Sider, Content } = Layout;
 
@@ -26,6 +28,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const {
@@ -150,6 +153,18 @@ export default function DashboardLayout({
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
         </Content>
       </Layout>
+
+      {/* ChatBot FloatButton */}
+      <FloatButton
+        icon={<CustomerServiceOutlined />}
+        type="primary"
+        style={{ insetInlineEnd: 24 }}
+        onClick={() => setChatOpen(!chatOpen)}
+        tooltip="AI Assistant"
+      />
+
+      {/* ChatBot Interface */}
+      {chatOpen && <ChatBot onClose={() => setChatOpen(false)} />}
     </Layout>
   );
 }
