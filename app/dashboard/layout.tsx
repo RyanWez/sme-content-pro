@@ -16,6 +16,7 @@ import { ProductLaunchLaptop } from '@/components/icons/ProductLaunchLaptop';
 import { useRouter, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import HeaderBreadcrumb from '@/components/HeaderBreadcrumb';
 
 const { Header, Sider, Content } = Layout;
 
@@ -116,7 +117,15 @@ export default function DashboardLayout({
         />
       </Sider>
       <Layout>
-        <Header style={{ padding: 0, background: colorBgContainer }}>
+        <Header
+          style={{
+            padding: '0 24px',
+            background: colorBgContainer,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 16,
+          }}
+        >
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -127,6 +136,7 @@ export default function DashboardLayout({
               height: 64,
             }}
           />
+          <HeaderBreadcrumb />
         </Header>
         <Content
           style={{
