@@ -122,11 +122,12 @@ export default function DashboardLayout({
       <Layout>
         <Header
           style={{
-            padding: '0 24px',
+            padding: 0,
             background: colorBgContainer,
             display: 'flex',
             alignItems: 'center',
             gap: 16,
+            paddingRight: 24,
           }}
         >
           <Button
@@ -137,6 +138,7 @@ export default function DashboardLayout({
               fontSize: '16px',
               width: 64,
               height: 64,
+              marginLeft: 0,
             }}
           />
           <HeaderBreadcrumb />
