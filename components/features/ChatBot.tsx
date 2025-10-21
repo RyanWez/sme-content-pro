@@ -163,7 +163,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     )
                                 }
                                 style={{
-                                    backgroundColor: message.sender === 'user' ? '#1890ff' : '#52c41a',
+                                    backgroundColor: message.sender === 'user' ? '#1890ff' : '#fff',
+                                    color: message.sender === 'user' ? '#fff' : '#1890ff',
                                 }}
                                 size={40}
                             />
@@ -188,7 +189,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                         <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
                             <Avatar
                                 icon={<AnimatedBotIcon isThinking={true} size={24} />}
-                                style={{ backgroundColor: '#14b4f3ff' }}
+                                style={{ backgroundColor: '#fff', color: '#1890ff' }}
                                 size={40}
                             />
                             <div
