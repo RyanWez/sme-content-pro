@@ -1,35 +1,22 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Card, Input, Button, Avatar, Space, Typography } from 'antd';
 import { SendOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons';
 import AnimatedBotIcon from '../ui/AnimatedBotIcon';
+import { useOllamaChat } from '@/hooks/useOllamaChat';
+import { parseMarkdown } from '@/lib/ollama/markdown';
 
 const { TextArea } = Input;
 const { Text } = Typography;
-
-interface Message {
-    id: number;
-    text: string;
-    sender: 'user' | 'bot';
-    timestamp: Date;
-}
 
 interface ChatBotProps {
     onClose: () => void;
 }
 
 export default function ChatBot({ onClose }: ChatBotProps) {
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 1,
-            text: 'မင်္ဂလာပါ! ကျွန်တော် SME Content Pro AI Assistant ပါ။ ဘယ်လိုကူညီပေးရမလဲ?',
-            sender: 'bot',
-            timestamp: new Date(),
-        },
-    ]);
-    const [inputValue, setInputValue] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const { messages, isLoading, sendMessage } = useOllamaChat();
+    const [inputValue, setInputValue] = React.useState('');
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -41,30 +28,11 @@ export default function ChatBot({ onClose }: ChatBotProps) {
     }, [messages]);
 
     const handleSend = async () => {
-        if (!inputValue.trim()) return;
-
-        const userMessage: Message = {
-            id: messages.length + 1,
-            text: inputValue,
-            sender: 'user',
-            timestamp: new Date(),
-        };
-
-        setMessages((prev) => [...prev, userMessage]);
+        if (!inputValue.trim() || isLoading) return;
+        
+        const message = inputValue;
         setInputValue('');
-        setIsLoading(true);
-
-        // Simulate bot response
-        setTimeout(() => {
-            const botMessage: Message = {
-                id: messages.length + 2,
-                text: 'ကျေးဇူးတင်ပါတယ်။ သင့်မေးခွန်းကို လက်ခံရရှိပါပြီ။ ဒီ feature ကို မကြာခင် ထည့်သွင်းပေးပါမယ်။',
-                sender: 'bot',
-                timestamp: new Date(),
-            };
-            setMessages((prev) => [...prev, botMessage]);
-            setIsLoading(false);
-        }, 1000);
+        await sendMessage(message);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -159,7 +127,10 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     message.sender === 'user' ? (
                                         <UserOutlined />
                                     ) : (
-                                        <AnimatedBotIcon isThinking={false} size={24} />
+                                        <AnimatedBotIcon 
+                                            isThinking={message.isStreaming || false} 
+                                            size={24} 
+                                        />
                                     )
                                 }
                                 style={{
@@ -177,41 +148,33 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     color: message.sender === 'user' ? 'white' : 'black',
                                 }}
                             >
-                                <Text style={{ color: message.sender === 'user' ? 'white' : 'black' }}>
-                                    {message.text}
-                                </Text>
+                                {message.sender === 'bot' ? (
+                                    <>
+                                        {message.text ? (
+                                            <div
+                                                dangerouslySetInnerHTML={{
+                                                    __html: parseMarkdown(message.text),
+                                                }}
+                                                style={{
+                                                    color: 'black',
+                                                    wordBreak: 'break-word',
+                                                }}
+                                            />
+                                        ) : (
+                                            <span className="thinking-dots">
+                                                <span>.</span>
+                                                <span>.</span>
+                                                <span>.</span>
+                                            </span>
+                                        )}
+                                    </>
+                                ) : (
+                                    <Text style={{ color: 'white' }}>{message.text}</Text>
+                                )}
                             </div>
                         </div>
                     </div>
                 ))}
-                {isLoading && (
-                    <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: 12 }}>
-                        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start' }}>
-                            <Avatar
-                                icon={<AnimatedBotIcon isThinking={true} size={24} />}
-                                style={{ backgroundColor: '#fff', color: '#1890ff' }}
-                                size={40}
-                            />
-                            <div
-                                style={{
-                                    padding: '8px 12px',
-                                    borderRadius: 8,
-                                    backgroundColor: 'white',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 4,
-                                }}
-                            >
-                                <Text>Typing</Text>
-                                <span className="typing-dots">
-                                    <span>.</span>
-                                    <span>.</span>
-                                    <span>.</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                )}
                 <div ref={messagesEndRef} />
             </div>
 
@@ -231,43 +194,109 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                         placeholder="မက်ဆေ့ခ်ျရေးပါ..."
                         autoSize={{ minRows: 1, maxRows: 3 }}
                         style={{ resize: 'none' }}
+                        disabled={isLoading}
                     />
                     <Button
                         type="primary"
                         icon={<SendOutlined />}
                         onClick={handleSend}
                         disabled={!inputValue.trim() || isLoading}
+                        loading={isLoading}
                     />
                 </Space.Compact>
             </div>
 
-            {/* Typing Dots Animation */}
+            {/* Animations */}
             <style jsx>{`
-        @keyframes typingDot {
-          0%, 60%, 100% {
-            opacity: 0.3;
-          }
-          30% {
-            opacity: 1;
-          }
-        }
+                /* Thinking Dots Animation */
+                @keyframes thinking-dot {
+                    0%, 60%, 100% {
+                        opacity: 0.3;
+                    }
+                    30% {
+                        opacity: 1;
+                    }
+                }
 
-        .typing-dots span {
-          animation: typingDot 1.4s infinite;
-        }
+                .thinking-dots {
+                    display: inline-block;
+                    color: #1890ff;
+                    font-size: 1.5em;
+                    line-height: 1;
+                }
 
-        .typing-dots span:nth-child(1) {
-          animation-delay: 0s;
-        }
+                .thinking-dots span {
+                    animation: thinking-dot 1.4s infinite;
+                }
 
-        .typing-dots span:nth-child(2) {
-          animation-delay: 0.2s;
-        }
+                .thinking-dots span:nth-child(1) {
+                    animation-delay: 0s;
+                }
 
-        .typing-dots span:nth-child(3) {
-          animation-delay: 0.4s;
-        }
-      `}</style>
+                .thinking-dots span:nth-child(2) {
+                    animation-delay: 0.2s;
+                }
+
+                .thinking-dots span:nth-child(3) {
+                    animation-delay: 0.4s;
+                }
+
+                /* Markdown Styles */
+                :global(.ant-card-body strong) {
+                    font-weight: 600;
+                    color: #1890ff;
+                }
+
+                :global(.ant-card-body code) {
+                    background: #f0f0f0;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    font-family: 'Courier New', monospace;
+                    font-size: 0.9em;
+                }
+
+                :global(.ant-card-body ul) {
+                    margin: 4px 0;
+                    padding-left: 20px;
+                    list-style-type: disc;
+                }
+
+                :global(.ant-card-body li) {
+                    margin: 2px 0;
+                    line-height: 1.5;
+                }
+
+                :global(.ant-card-body h1),
+                :global(.ant-card-body h2),
+                :global(.ant-card-body h3) {
+                    margin: 6px 0 4px 0;
+                    font-weight: 600;
+                    line-height: 1.3;
+                }
+
+                :global(.ant-card-body h1) {
+                    font-size: 1.2em;
+                }
+
+                :global(.ant-card-body h2) {
+                    font-size: 1.1em;
+                }
+
+                :global(.ant-card-body h3) {
+                    font-size: 1em;
+                }
+
+                :global(.ant-card-body br) {
+                    display: block;
+                    content: "";
+                    margin: 2px 0;
+                }
+
+                :global(.ant-card-body p) {
+                    margin: 4px 0;
+                    line-height: 1.5;
+                }
+            `}</style>
         </Card>
     );
 }
