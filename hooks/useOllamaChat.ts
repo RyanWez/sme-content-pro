@@ -1,11 +1,25 @@
 import { useState, useCallback } from 'react';
 import { Message, ChatMessage } from '@/lib/ollama/types';
 
+const SYSTEM_PROMPT = `သင်သည် SME Content Pro website အတွက် အကူအညီပေးသော AI Assistant ဖြစ်ပါတယ်။
+
+အရေးကြီးသော စည်းမျဉ်းများ:
+1. အဖြေများကို တိုတိုနဲ့ ရှင်းလင်းစွာ ပြန်ဖြေပါ (2-3 စာကြောင်း သို့မဟုတ် 3-5 bullet points)
+2. အရှည်ကြီး ရှင်းပြစရာမလိုပါ - တိုတိုနဲ့ အဓိကအချက်တွေပဲ ပြောပါ
+3. ဒီ website နဲ့ မသက်ဆိုင်တဲ့ မေးခွန်းတွေ သို့မဟုတ် အရှည်ကြီး ရှင်းပြရမယ့် မေးခွန်းတွေဆိုရင် "ကျွန်တော့်မှာ အကန့်အသတ်လေးတွေ ရှိနေလို့ ဒီမေးခွန်းကို အဖြေပြန်မပေးနိုင်တဲ့အတွက် တောင်းပန်ပါတယ် ခင်ဗျာ။" လို့ ပြန်ပေးပါ
+4. Myanmar Unicode ဖြင့်သာ ပြန်ဖြေပါ
+5. Emoji များကို သင့်လျော်သလို အသုံးပြုနိုင်ပါတယ်
+
+Website Features:
+- Blog Content Writer - ဘလော့ခ်ပို့စ် အကြောင်းအရာများ ရေးသားပေးခြင်း
+- Promotion Idea - ပရိုမိုးရှင်း အကြံဉာဏ်များ ပေးခြင်း  
+- Product Caption - ကုန်ပစ္စည်း caption များ ရေးပေးခြင်း`;
+
 export function useOllamaChat() {
     const [messages, setMessages] = useState<Message[]>([
         {
             id: 1,
-            text: 'မင်္ဂလာပါ! ကျွန်တော် SME Content Pro AI Assistant ပါ။ ဘယ်လိုကူညီပေးရမလဲ?',
+            text: 'မင်္ဂလာပါ! ကျွန်တော် SME Content Pro AI Assistant ပါ။ ဘယ်လိုကူညီပေးရမလဲ? 😊',
             sender: 'bot',
             timestamp: new Date(),
         },
@@ -40,14 +54,25 @@ export function useOllamaChat() {
             setMessages((prev) => [...prev, botMessage]);
 
             try {
-                // Prepare messages for API
-                const chatMessages: ChatMessage[] = messages
-                    .filter((m) => !m.isStreaming)
-                    .map((m) => ({
-                        role: m.sender === 'user' ? 'user' : 'assistant',
-                        content: m.text,
-                    }));
+                // Prepare messages for API with system prompt
+                const chatMessages: ChatMessage[] = [
+                    {
+                        role: 'system',
+                        content: SYSTEM_PROMPT,
+                    },
+                ];
 
+                // Add conversation history
+                messages
+                    .filter((m) => !m.isStreaming)
+                    .forEach((m) => {
+                        chatMessages.push({
+                            role: m.sender === 'user' ? 'user' : 'assistant',
+                            content: m.text,
+                        });
+                    });
+
+                // Add current user message
                 chatMessages.push({
                     role: 'user',
                     content: userMessage,
@@ -61,7 +86,7 @@ export function useOllamaChat() {
                     },
                     body: JSON.stringify({
                         messages: chatMessages,
-                        model: 'deepseek-v3.1:671b-cloud',
+                        model: 'gpt-oss:120b-cloud',
                     }),
                 });
 

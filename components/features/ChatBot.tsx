@@ -48,8 +48,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 position: 'fixed',
                 bottom: 90,
                 right: 24,
-                width: 380,
-                height: 500,
+                width: 450,
+                height: 550,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
                 zIndex: 1000,
                 display: 'flex',
@@ -141,8 +141,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                             />
                             <div
                                 style={{
-                                    maxWidth: 240,
-                                    padding: '8px 12px',
+                                    maxWidth: 320,
+                                    padding: '10px 14px',
                                     borderRadius: 8,
                                     backgroundColor: message.sender === 'user' ? '#1890ff' : 'white',
                                     color: message.sender === 'user' ? 'white' : 'black',
@@ -241,37 +241,53 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     animation-delay: 0.4s;
                 }
 
-                /* Markdown Styles */
+                /* Markdown Styles - Optimized */
                 :global(.ant-card-body strong) {
-                    font-weight: 600;
-                    color: #1890ff;
+                    font-weight: 700;
+                    color: #262626;
+                }
+
+                :global(.ant-card-body em) {
+                    font-style: italic;
+                    color: #595959;
                 }
 
                 :global(.ant-card-body code) {
-                    background: #f0f0f0;
+                    background: #f5f5f5;
                     padding: 2px 6px;
-                    border-radius: 4px;
-                    font-family: 'Courier New', monospace;
+                    border-radius: 3px;
+                    font-family: 'Courier New', Consolas, monospace;
                     font-size: 0.9em;
+                    color: #d63384;
                 }
 
                 :global(.ant-card-body ul) {
-                    margin: 4px 0;
-                    padding-left: 20px;
-                    list-style-type: disc;
+                    margin: 6px 0;
+                    padding-left: 0;
+                    list-style-type: none;
                 }
 
                 :global(.ant-card-body li) {
-                    margin: 2px 0;
-                    line-height: 1.5;
+                    margin: 3px 0;
+                    line-height: 1.7;
+                    position: relative;
+                    padding-left: 0;
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 6px;
+                }
+
+                :global(.ant-card-body li::before) {
+                    display: none;
                 }
 
                 :global(.ant-card-body h1),
                 :global(.ant-card-body h2),
                 :global(.ant-card-body h3) {
-                    margin: 6px 0 4px 0;
+                    margin: 8px 0 4px 0;
                     font-weight: 600;
-                    line-height: 1.3;
+                    line-height: 1.4;
+                    color: #262626;
                 }
 
                 :global(.ant-card-body h1) {
@@ -283,18 +299,33 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 }
 
                 :global(.ant-card-body h3) {
-                    font-size: 1em;
-                }
-
-                :global(.ant-card-body br) {
-                    display: block;
-                    content: "";
-                    margin: 2px 0;
+                    font-size: 1.05em;
                 }
 
                 :global(.ant-card-body p) {
                     margin: 4px 0;
-                    line-height: 1.5;
+                    line-height: 1.7;
+                    color: #262626;
+                }
+
+                :global(.ant-card-body p:first-child) {
+                    margin-top: 0;
+                }
+
+                :global(.ant-card-body p:last-child) {
+                    margin-bottom: 0;
+                }
+
+                /* Base font size */
+                :global(.ant-card-body) {
+                    font-size: 14px;
+                    word-wrap: break-word;
+                    overflow-wrap: break-word;
+                }
+
+                /* Better spacing between elements */
+                :global(.ant-card-body > *:not(:last-child)) {
+                    margin-bottom: 4px;
                 }
             `}</style>
         </Card>
