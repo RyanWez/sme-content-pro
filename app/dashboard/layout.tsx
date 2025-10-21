@@ -19,6 +19,7 @@ import { Suspense } from 'react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import HeaderBreadcrumb from '@/components/HeaderBreadcrumb';
 import ChatBot from '@/components/ChatBot';
+import SuppressAntdWarning from '@/components/SuppressAntdWarning';
 
 const { Header, Sider, Content } = Layout;
 
@@ -93,8 +94,10 @@ export default function DashboardLayout({
   ];
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
-      <Sider trigger={null} collapsible collapsed={collapsed}>
+    <>
+      <SuppressAntdWarning />
+      <Layout style={{ minHeight: '100vh' }}>
+        <Sider trigger={null} collapsible collapsed={collapsed}>
         <div
           style={{
             height: 32,
@@ -167,6 +170,7 @@ export default function DashboardLayout({
 
       {/* ChatBot Interface */}
       {chatOpen && <ChatBot onClose={() => setChatOpen(false)} />}
-    </Layout>
+      </Layout>
+    </>
   );
 }

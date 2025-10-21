@@ -201,7 +201,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     gap: 4,
                                 }}
                             >
-                                <Text>ရေးနေပါတယ်</Text>
+                                <Text>Typing...</Text>
                                 <span className="typing-dots">
                                     <span>.</span>
                                     <span>.</span>
