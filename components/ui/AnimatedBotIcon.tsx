@@ -8,143 +8,159 @@ interface AnimatedBotIconProps {
 }
 
 export default function AnimatedBotIcon({ isThinking = false, size = 24 }: AnimatedBotIconProps) {
+    const eyeClass = isThinking ? 'thinking-eyes' : 'blinking-eyes';
+    
     return (
         <div
             style={{
                 width: size,
                 height: size,
                 position: 'relative',
-                display: 'inline-block',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
             }}
         >
             <svg
                 width={size}
                 height={size}
-                viewBox="0 0 24 24"
+                viewBox="0 0 32 32"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                style={{ overflow: 'visible' }}
             >
-                {/* Bot Body - Rounded Rectangle */}
+                {/* Antenna */}
+                <circle cx="16" cy="4" r="2" fill="currentColor" />
+                <line x1="16" y1="6" x2="16" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+
+                {/* Bot Head/Body */}
                 <rect
-                    x="5"
-                    y="9"
-                    width="14"
-                    height="11"
-                    rx="3"
+                    x="6"
+                    y="10"
+                    width="20"
+                    height="18"
+                    rx="4"
                     fill="currentColor"
                 />
 
-                {/* Antenna */}
-                <rect
-                    x="11"
-                    y="5"
-                    width="2"
-                    height="4"
-                    rx="1"
-                    fill="currentColor"
-                />
-                <rect
-                    x="10.5"
-                    y="4"
-                    width="3"
-                    height="2"
-                    rx="1"
-                    fill="currentColor"
+                {/* Eyes Container */}
+                <g className={eyeClass}>
+                    {/* Left Eye */}
+                    <ellipse
+                        cx="12"
+                        cy="17"
+                        rx="2.5"
+                        ry="3"
+                        fill="white"
+                        className="eye left-eye"
+                    />
+
+                    {/* Right Eye */}
+                    <ellipse
+                        cx="20"
+                        cy="17"
+                        rx="2.5"
+                        ry="3"
+                        fill="white"
+                        className="eye right-eye"
+                    />
+                </g>
+
+                {/* Mouth */}
+                <path
+                    d="M 12 23 Q 16 25 20 23"
+                    stroke="white"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    fill="none"
+                    opacity="0.8"
                 />
 
                 {/* Left Arm */}
                 <rect
                     x="3"
-                    y="12"
-                    width="2"
-                    height="5"
-                    rx="1"
+                    y="15"
+                    width="3"
+                    height="8"
+                    rx="1.5"
                     fill="currentColor"
                 />
 
                 {/* Right Arm */}
                 <rect
-                    x="19"
-                    y="12"
-                    width="2"
-                    height="5"
-                    rx="1"
+                    x="26"
+                    y="15"
+                    width="3"
+                    height="8"
+                    rx="1.5"
                     fill="currentColor"
                 />
-
-                {/* Eyes Container */}
-                <g className={isThinking ? 'thinking-eyes' : 'blinking-eyes'}>
-                    {/* Left Eye */}
-                    <rect
-                        x="8.5"
-                        y="13"
-                        width="2.5"
-                        height="3"
-                        rx="1.25"
-                        fill="white"
-                        className="eye"
-                    />
-
-                    {/* Right Eye */}
-                    <rect
-                        x="13"
-                        y="13"
-                        width="2.5"
-                        height="3"
-                        rx="1.25"
-                        fill="white"
-                        className="eye"
-                    />
-                </g>
             </svg>
 
             <style jsx>{`
-        /* Blinking Animation - Normal State (Squint effect) */
-        @keyframes blink {
-          0%, 92%, 100% {
-            height: 3px;
-            y: 13px;
-          }
-          94% {
-            height: 1px;
-            y: 14px;
-          }
-          96% {
-            height: 3px;
-            y: 13px;
-          }
-        }
+                /* Smooth Blinking Animation */
+                @keyframes blink {
+                    0%, 90%, 100% {
+                        transform: scaleY(1);
+                        opacity: 1;
+                    }
+                    93%, 96% {
+                        transform: scaleY(0.1);
+                        opacity: 0.8;
+                    }
+                }
 
-        .blinking-eyes .eye {
-          animation: blink 3s infinite ease-in-out;
-        }
+                .blinking-eyes .eye {
+                    animation: blink 4s infinite ease-in-out;
+                    transform-origin: center;
+                }
 
-        /* Thinking Animation - Dots moving */
-        @keyframes thinking {
-          0%, 100% {
-            transform: translateY(0) scaleY(1);
-          }
-          25% {
-            transform: translateY(-2px) scaleY(1.2);
-          }
-          50% {
-            transform: translateY(0) scaleY(0.8);
-          }
-        }
+                .blinking-eyes .left-eye {
+                    animation-delay: 0s;
+                }
 
-        .thinking-eyes .eye {
-          animation: thinking 1s infinite ease-in-out;
-          transform-origin: center;
-        }
+                .blinking-eyes .right-eye {
+                    animation-delay: 0.05s;
+                }
 
-        .thinking-eyes .eye:first-child {
-          animation-delay: 0s;
-        }
+                /* Smooth Thinking Animation */
+                @keyframes thinking-bounce {
+                    0%, 100% {
+                        transform: translateY(0) scale(1);
+                    }
+                    50% {
+                        transform: translateY(-2px) scale(1.1, 0.9);
+                    }
+                }
 
-        .thinking-eyes .eye:last-child {
-          animation-delay: 0.2s;
-        }
-      `}</style>
+                @keyframes thinking-pulse {
+                    0%, 100% {
+                        opacity: 1;
+                    }
+                    50% {
+                        opacity: 0.6;
+                    }
+                }
+
+                .thinking-eyes .eye {
+                    animation: thinking-bounce 0.6s infinite ease-in-out, 
+                               thinking-pulse 1.2s infinite ease-in-out;
+                    transform-origin: center;
+                }
+
+                .thinking-eyes .left-eye {
+                    animation-delay: 0s;
+                }
+
+                .thinking-eyes .right-eye {
+                    animation-delay: 0.15s;
+                }
+
+                /* Smooth transitions */
+                .eye {
+                    transition: all 0.2s ease-in-out;
+                }
+            `}</style>
         </div>
     );
 }
