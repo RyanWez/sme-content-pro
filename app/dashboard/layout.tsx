@@ -1,0 +1,145 @@
+'use client';
+
+import React, { useState } from 'react';
+import {
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  UploadOutlined,
+} from '@ant-design/icons';
+import { Button, Layout, Menu, theme } from 'antd';
+import { ContentBrushPen } from '@/components/icons/ContentBrushPen';
+import { BlocksScale } from '@/components/icons/BlocksScale';
+import { Pencil2 } from '@/components/icons/Pencil2';
+import { FormEditionClipboardWrite } from '@/components/icons/FormEditionClipboardWrite';
+import { CollaborationsIdea } from '@/components/icons/CollaborationsIdea';
+import { ProductLaunchLaptop } from '@/components/icons/ProductLaunchLaptop';
+import { useRouter, usePathname } from 'next/navigation';
+import { Suspense } from 'react';
+import LoadingSpinner from '@/components/LoadingSpinner';
+
+const { Header, Sider, Content } = Layout;
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [collapsed, setCollapsed] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
+  const getSelectedKey = () => {
+    if (pathname === '/dashboard') return ['1'];
+    if (pathname.includes('/dashboard/content/blog')) return ['2-1'];
+    if (pathname.includes('/dashboard/content/promotion')) return ['2-2'];
+    if (pathname.includes('/dashboard/content/product')) return ['2-3'];
+    return ['1'];
+  };
+
+  const isOnDashboard = pathname === '/dashboard';
+
+  const handleMenuClick = (e: { key: string }) => {
+    if (e.key === '1') {
+      router.push('/dashboard');
+    } else if (e.key === '2-1') {
+      router.push('/dashboard/content/blog');
+    } else if (e.key === '2-2') {
+      router.push('/dashboard/content/promotion');
+    } else if (e.key === '2-3') {
+      router.push('/dashboard/content/product');
+    }
+  };
+
+  const menuItems = [
+    {
+      key: '1',
+      icon: <BlocksScale isActive={isOnDashboard} />,
+      label: 'Dashboard',
+    },
+    {
+      key: '2',
+      icon: <Pencil2 />,
+      label: 'Content',
+      children: [
+        {
+          key: '2-1',
+          icon: <FormEditionClipboardWrite />,
+          label: 'Blog Content Writer',
+        },
+        {
+          key: '2-2',
+          icon: <CollaborationsIdea />,
+          label: 'Promotion Idea',
+        },
+        {
+          key: '2-3',
+          icon: <ProductLaunchLaptop />,
+          label: 'Product Caption',
+        },
+      ],
+    },
+    {
+      key: '3',
+      icon: <UploadOutlined />,
+      label: 'nav 3',
+    },
+  ];
+
+  return (
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider trigger={null} collapsible collapsed={collapsed}>
+        <div
+          style={{
+            height: 32,
+            margin: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: collapsed ? 'center' : 'flex-start',
+            gap: 8,
+            color: 'white',
+            fontSize: 18,
+            fontWeight: 600,
+          }}
+        >
+          <ContentBrushPen style={{ fontSize: 24, flexShrink: 0 }} />
+          {!collapsed && <span>SME</span>}
+        </div>
+        <Menu
+          theme="dark"
+          mode="inline"
+          selectedKeys={getSelectedKey()}
+          items={menuItems}
+          onClick={handleMenuClick}
+        />
+      </Sider>
+      <Layout>
+        <Header style={{ padding: 0, background: colorBgContainer }}>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              fontSize: '16px',
+              width: 64,
+              height: 64,
+            }}
+          />
+        </Header>
+        <Content
+          style={{
+            margin: '24px 16px',
+            padding: 24,
+            minHeight: 280,
+            background: colorBgContainer,
+            borderRadius: borderRadiusLG,
+          }}
+        >
+          <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+        </Content>
+      </Layout>
+    </Layout>
+  );
+}
