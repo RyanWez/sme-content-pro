@@ -15,6 +15,42 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                const originalWarn = console.warn;
+                const originalError = console.error;
+                
+                console.warn = function(...args) {
+                  const message = String(args[0] || '');
+                  if (
+                    message.includes('[antd: compatible]') ||
+                    message.includes('antd v5 support React') ||
+                    message.includes('see https://u.ant.design/v5-for-19')
+                  ) {
+                    return;
+                  }
+                  originalWarn.apply(console, args);
+                };
+                
+                console.error = function(...args) {
+                  const message = String(args[0] || '');
+                  if (
+                    message.includes('[antd: compatible]') ||
+                    message.includes('antd v5 support React') ||
+                    message.includes('see https://u.ant.design/v5-for-19')
+                  ) {
+                    return;
+                  }
+                  originalError.apply(console, args);
+                };
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         <SuppressAntdWarning />
         <AntdRegistry>{children}</AntdRegistry>
