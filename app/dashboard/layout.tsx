@@ -16,10 +16,10 @@ import { CollaborationsIdea } from '@/components/icons/CollaborationsIdea';
 import { ProductLaunchLaptop } from '@/components/icons/ProductLaunchLaptop';
 import { useRouter, usePathname } from 'next/navigation';
 import { Suspense } from 'react';
-import LoadingSpinner from '@/components/LoadingSpinner';
-import HeaderBreadcrumb from '@/components/HeaderBreadcrumb';
-import ChatBot from '@/components/ChatBot';
-import SuppressAntdWarning from '@/components/SuppressAntdWarning';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import HeaderBreadcrumb from '@/components/ui/HeaderBreadcrumb';
+import ChatBot from '@/components/features/ChatBot';
+import SuppressAntdWarning from '@/components/utils/SuppressAntdWarning';
 
 const { Header, Sider, Content } = Layout;
 

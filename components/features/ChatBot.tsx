@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Card, Input, Button, Avatar, Space, Typography } from 'antd';
 import { SendOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons';
-import AnimatedBotIcon from './AnimatedBotIcon';
+import AnimatedBotIcon from '../ui/AnimatedBotIcon';
 
 const { TextArea } = Input;
 const { Text } = Typography;

@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { Button, Result } from 'antd';
 import { useRouter } from 'next/navigation';
-import PageHeader from '@/components/PageHeader';
-import LoadingSpinner from '@/components/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function Error404Page() {
   const router = useRouter();

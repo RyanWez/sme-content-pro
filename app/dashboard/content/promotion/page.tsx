@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import LoadingSpinner from '@/components/LoadingSpinner';
-import PageHeader from '@/components/PageHeader';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import PageHeader from '@/components/ui/PageHeader';
 
 export default function PromotionIdeaPage() {
   const [loading, setLoading] = useState(true);
