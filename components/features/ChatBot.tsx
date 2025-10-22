@@ -29,7 +29,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
     const handleSend = async () => {
         if (!inputValue.trim() || isLoading) return;
-        
+
         const message = inputValue;
         setInputValue('');
         await sendMessage(message);
@@ -80,8 +80,13 @@ export default function ChatBot({ onClose }: ChatBotProps) {
             >
                 <Space>
                     <Avatar
-                        icon={<AnimatedBotIcon isThinking={isLoading} size={24} />}
-                        style={{ backgroundColor: '#fff', color: '#1890ff' }}
+                        icon={<AnimatedBotIcon size={28} />}
+                        style={{
+                            background: 'linear-gradient(135deg, #d3d8f0ff 0%, #eef0e9ff 100%)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
                         size={40}
                     />
                     <Text strong style={{ color: 'white', fontSize: 16 }}>
@@ -127,15 +132,18 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     message.sender === 'user' ? (
                                         <UserOutlined />
                                     ) : (
-                                        <AnimatedBotIcon 
-                                            isThinking={message.isStreaming || false} 
-                                            size={24} 
-                                        />
+                                        <AnimatedBotIcon size={28} />
                                     )
                                 }
                                 style={{
-                                    backgroundColor: message.sender === 'user' ? '#1890ff' : '#fff',
-                                    color: message.sender === 'user' ? '#fff' : '#1890ff',
+                                    backgroundColor: message.sender === 'user' ? '#1890ff' : undefined,
+                                    background: message.sender === 'user'
+                                        ? '#1890ff'
+                                        : 'linear-gradient(135deg, #e4e8f9ff 0%, #ede9f1ff 100%)',
+                                    color: message.sender === 'user' ? '#fff' : undefined,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
                                 }}
                                 size={40}
                             />
