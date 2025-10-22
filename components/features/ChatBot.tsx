@@ -182,6 +182,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
             {/* Input */}
             <div
+                className="chatbot-input"
                 style={{
                     padding: '12px',
                     borderTop: '1px solid #f0f0f0',
@@ -224,6 +225,16 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     flex-direction: column;
                     border-radius: 16px;
                     overflow: hidden;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+
+                /* Prevent body scroll when chatbot is open on mobile */
+                @media (max-width: 639px) {
+                    body:has(.chatbot-card) {
+                        overflow: hidden;
+                        position: fixed;
+                        width: 100%;
+                    }
                 }
 
                 /* Laptop အသေး (1024px - 1366px) */
@@ -259,28 +270,52 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     }
                 }
 
-                /* Mobile Portrait (< 640px) */
+                /* Mobile Portrait (< 640px) - Full Screen Experience */
                 @media (max-width: 639px) {
                     :global(.chatbot-card) {
-                        width: calc(100vw - 16px);
-                        height: calc(100vh - 80px);
-                        max-height: none;
-                        right: 8px;
-                        left: 8px;
-                        bottom: 60px;
-                        border-radius: 12px;
+                        width: 100vw;
+                        height: 100vh;
+                        max-height: 100vh;
+                        right: 0;
+                        left: 0;
+                        bottom: 0;
+                        top: 0;
+                        border-radius: 0;
+                        box-shadow: none;
+                    }
+
+                    :global(.chatbot-header) {
+                        padding: 12px 16px !important;
+                    }
+
+                    :global(.chatbot-messages) {
+                        padding: 12px !important;
+                    }
+
+                    :global(.chatbot-input) {
+                        padding: 12px !important;
+                        padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
                     }
                 }
 
                 /* Very Small Mobile (< 375px) */
                 @media (max-width: 374px) {
                     :global(.chatbot-card) {
-                        width: calc(100vw - 8px);
-                        height: calc(100vh - 70px);
-                        right: 4px;
-                        left: 4px;
-                        bottom: 55px;
-                        border-radius: 8px;
+                        width: 100vw;
+                        height: 100vh;
+                        right: 0;
+                        left: 0;
+                        bottom: 0;
+                        top: 0;
+                        border-radius: 0;
+                    }
+
+                    :global(.chatbot-header) {
+                        padding: 10px 12px !important;
+                    }
+
+                    :global(.chatbot-messages) {
+                        padding: 10px !important;
                     }
                 }
 
@@ -290,13 +325,59 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                         max-width: calc(100% - 48px) !important;
                         font-size: 14px;
                     }
+
+                    :global(.ant-avatar) {
+                        width: 36px !important;
+                        height: 36px !important;
+                        min-width: 36px !important;
+                    }
+                }
+
+                @media (max-width: 639px) {
+                    :global(.message-bubble) {
+                        max-width: calc(100vw - 80px) !important;
+                        font-size: 15px;
+                        line-height: 1.5;
+                    }
                 }
 
                 @media (max-width: 374px) {
                     :global(.message-bubble) {
-                        max-width: calc(100% - 48px) !important;
-                        font-size: 13px;
+                        max-width: calc(100vw - 70px) !important;
+                        font-size: 14px;
                         padding: 8px 12px !important;
+                    }
+
+                    :global(.ant-avatar) {
+                        width: 32px !important;
+                        height: 32px !important;
+                        min-width: 32px !important;
+                    }
+                }
+
+                /* Mobile UX Improvements */
+                @media (max-width: 639px) {
+                    /* Smooth scrolling */
+                    :global(.chatbot-messages) {
+                        -webkit-overflow-scrolling: touch;
+                        scroll-behavior: smooth;
+                    }
+
+                    /* Better touch targets */
+                    :global(.ant-btn) {
+                        min-height: 44px;
+                        min-width: 44px;
+                    }
+
+                    /* Larger input area */
+                    :global(.ant-input) {
+                        font-size: 16px !important;
+                        padding: 10px 12px !important;
+                    }
+
+                    /* Prevent zoom on input focus */
+                    :global(.ant-input:focus) {
+                        font-size: 16px !important;
                     }
                 }
 
