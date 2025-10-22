@@ -1,0 +1,112 @@
+/* Dashboard animations and optimizations */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Smooth scroll behavior */
+.ant-layout-content {
+  scroll-behavior: smooth;
+}
+
+/* Optimize scrollbar */
+.ant-layout-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ant-layout-content::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.ant-layout-content::-webkit-scrollbar-thumb {
+  background: #bfbfbf;
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.ant-layout-content::-webkit-scrollbar-thumb:hover {
+  background: #8c8c8c;
+}
+
+/* Dashboard component animations */
+.dashboard-welcome {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.dashboard-stats {
+  animation: slideUp 0.5s ease-out 0.1s both;
+}
+
+.dashboard-content-table {
+  animation: slideUp 0.5s ease-out 0.2s both;
+}
+
+.dashboard-bottom-section {
+  animation: slideUp 0.5s ease-out 0.3s both;
+}
+
+/* Card hover effects */
+.ant-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ant-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Prevent layout shift */
+.ant-skeleton {
+  min-height: 100px;
+}
+
+/* Smooth transitions for all interactive elements */
+.ant-btn,
+.ant-input,
+.ant-select,
+.ant-tabs-tab {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Table row hover effect */
+.ant-table-tbody > tr:hover > td {
+  background: #fafafa !important;
+  transition: background 0.2s ease;
+}
+
+/* Optimize rendering */
+.ant-layout {
+  will-change: scroll-position;
+}
+
+.ant-card {
+  will-change: transform;
+}

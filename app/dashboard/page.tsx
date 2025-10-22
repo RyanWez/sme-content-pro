@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Row, Col } from 'antd';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import DashboardSkeleton from '@/components/dashboard/DashboardSkeleton';
 import {
   WelcomeHeader,
   StatsCards,
@@ -16,21 +16,24 @@ import {
   getMockActivities,
   getMockAIUsage,
 } from '@/lib/dashboard/mockData';
+import './globals.css';
 
 export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     // Simulate data loading
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, []);
 
-  if (loading) {
-    return <LoadingSpinner />;
+  if (!mounted || loading) {
+    return <DashboardSkeleton />;
   }
 
   const stats = getMockStats();
@@ -41,23 +44,31 @@ export default function DashboardPage() {
   return (
     <>
       {/* Welcome Header with Quick Create */}
-      <WelcomeHeader />
+      <div className="dashboard-welcome">
+        <WelcomeHeader />
+      </div>
 
       {/* Stats Cards */}
-      <StatsCards stats={stats} />
+      <div className="dashboard-stats">
+        <StatsCards stats={stats} />
+      </div>
 
       {/* Content Overview Table */}
-      <ContentTable data={recentContent} />
+      <div className="dashboard-content-table">
+        <ContentTable data={recentContent} />
+      </div>
 
       {/* Bottom Section: Activity Feed + AI Usage */}
-      <Row gutter={[16, 16]}>
-        <Col xs={24} lg={12}>
-          <ActivityFeed activities={activities} />
-        </Col>
-        <Col xs={24} lg={12}>
-          <AIUsageCard stats={aiUsage} />
-        </Col>
-      </Row>
+      <div className="dashboard-bottom-section">
+        <Row gutter={[16, 16]}>
+          <Col xs={24} lg={12}>
+            <ActivityFeed activities={activities} />
+          </Col>
+          <Col xs={24} lg={12}>
+            <AIUsageCard stats={aiUsage} />
+          </Col>
+        </Row>
+      </div>
     </>
   );
 }

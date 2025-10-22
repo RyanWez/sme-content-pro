@@ -5,3 +5,4 @@ export { default as StatsCards } from './StatsCards';
 export { default as ContentTable } from './ContentTable';
 export { default as ActivityFeed } from './ActivityFeed';
 export { default as AIUsageCard } from './AIUsageCard';
+export { default as DashboardSkeleton } from './DashboardSkeleton';
