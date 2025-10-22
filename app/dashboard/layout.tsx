@@ -122,7 +122,7 @@ export default function DashboardLayout({
           onClick={handleMenuClick}
         />
       </Sider>
-      <Layout>
+      <Layout style={{ height: '100vh', overflow: 'hidden' }}>
         <Header
           style={{
             padding: 0,
@@ -131,6 +131,9 @@ export default function DashboardLayout({
             alignItems: 'center',
             gap: 16,
             paddingRight: 24,
+            position: 'sticky',
+            top: 0,
+            zIndex: 1,
           }}
         >
           <Button
@@ -150,9 +153,10 @@ export default function DashboardLayout({
           style={{
             margin: '24px 16px',
             padding: 24,
-            minHeight: 280,
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
+            overflow: 'auto',
+            height: 'calc(100vh - 64px - 48px)',
           }}
         >
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
