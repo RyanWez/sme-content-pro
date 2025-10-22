@@ -86,7 +86,7 @@ export function useOllamaChat() {
                     },
                     body: JSON.stringify({
                         messages: chatMessages,
-                        model: 'gpt-oss:120b-cloud',
+                        model: 'kimi-k2:1t',//deepseek-v3.1:671b-cloud
                     }),
                 });
 
