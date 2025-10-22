@@ -255,6 +255,13 @@ export default function DashboardLayout({
 
       {/* Responsive Styles */}
       <style jsx global>{`
+        /* Critical CSS - Load First to Prevent Flash */
+        @media (max-width: 1023px) {
+          .ant-layout-sider {
+            display: none !important;
+          }
+        }
+
         /* Smooth Animations */
         .mobile-sidebar-overlay {
           position: fixed;
@@ -314,19 +321,39 @@ export default function DashboardLayout({
           transition: background-color 0.2s ease;
         }
 
-        /* Desktop - Show sidebar, hide mobile menu button */
+        /* Critical CSS - Prevent FOUC (Flash of Unstyled Content) */
         .desktop-sidebar {
-          display: block !important;
+          display: none;
         }
+        
         .desktop-toggle-btn {
-          display: inline-flex !important;
+          display: none;
         }
+        
         .mobile-menu-btn {
-          display: none !important;
+          display: none;
         }
+        
         .mobile-sidebar,
         .mobile-sidebar-overlay {
-          display: none !important;
+          display: none;
+        }
+
+        /* Desktop - Show sidebar, hide mobile menu button */
+        @media (min-width: 1024px) {
+          .desktop-sidebar {
+            display: block !important;
+          }
+          .desktop-toggle-btn {
+            display: inline-flex !important;
+          }
+          .mobile-menu-btn {
+            display: none !important;
+          }
+          .mobile-sidebar,
+          .mobile-sidebar-overlay {
+            display: none !important;
+          }
         }
 
         /* Tablet & Mobile (< 1024px) - Hide desktop sidebar, show mobile menu */
