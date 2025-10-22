@@ -46,7 +46,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
     <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
       {statsData.map((stat, index) => (
         <Col xs={24} sm={12} lg={6} key={index}>
-          <Card bordered={false} style={{ background: stat.color }}>
+          <Card variant="borderless" style={{ background: stat.color }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
               <div
                 style={{
