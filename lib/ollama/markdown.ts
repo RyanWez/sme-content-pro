@@ -22,7 +22,7 @@ export function parseMarkdown(text: string): string {
   parsed = parsed.replace(/_([^_\n]+?)_/g, '<em>$1</em>');
 
   // Code Block: ```code``` (အရင်ဆုံး လုပ်ပါ)
-  parsed = parsed.replace(/```([\s\S]*?)```/g, (match, code) => {
+  parsed = parsed.replace(/```([\s\S]*?)```/g, (_match, code) => {
     return `<pre><code>${code.trim()}</code></pre>`;
   });
 
@@ -42,6 +42,9 @@ export function parseMarkdown(text: string): string {
 
   // Blockquote: > text
   parsed = parsed.replace(/^> (.+)$/gm, '<blockquote>$1</blockquote>');
+
+  // Tables: Parse markdown tables
+  parsed = parseTable(parsed);
 
   // Process lists
   const lines = parsed.split('\n');
@@ -120,7 +123,8 @@ export function parseMarkdown(text: string): string {
       trimmed.startsWith('<pre>') ||
       trimmed.startsWith('<blockquote>') ||
       trimmed.startsWith('<a') ||
-      trimmed.startsWith('<hr')
+      trimmed.startsWith('<hr') ||
+      trimmed.startsWith('<table')
     ) {
       return trimmed;
     }
@@ -192,4 +196,90 @@ function escapeHtml(text: string): string {
     "'": '&#039;',
   };
   return text.replace(/[&<>"']/g, (char) => map[char]);
+}
+
+// Helper function to parse markdown tables
+function parseTable(text: string): string {
+  const lines = text.split('\n');
+  const result: string[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    const line = lines[i];
+
+    // Check if this line looks like a table row (contains |)
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      const tableLines: string[] = [line];
+      let j = i + 1;
+
+      // Collect all consecutive table lines
+      while (j < lines.length && lines[j].trim().startsWith('|') && lines[j].trim().endsWith('|')) {
+        tableLines.push(lines[j]);
+        j++;
+      }
+
+      // Check if we have at least 2 lines (header + separator or header + data)
+      if (tableLines.length >= 2) {
+        const tableHtml = convertTableToHtml(tableLines);
+        if (tableHtml) {
+          result.push(tableHtml);
+          i = j;
+          continue;
+        }
+      }
+    }
+
+    result.push(line);
+    i++;
+  }
+
+  return result.join('\n');
+}
+
+// Convert markdown table to HTML
+function convertTableToHtml(tableLines: string[]): string | null {
+  if (tableLines.length < 2) return null;
+
+  // Parse header
+  const headerCells = tableLines[0]
+    .split('|')
+    .map(cell => cell.trim())
+    .filter(cell => cell !== '');
+
+  if (headerCells.length === 0) return null;
+
+  // Check if second line is a separator (contains dashes)
+  const secondLine = tableLines[1];
+  const isSeparator = /^[\|\s\-:]+$/.test(secondLine);
+
+  let html = '<table><thead><tr>';
+
+  // Add header cells
+  headerCells.forEach(cell => {
+    html += `<th>${cell}</th>`;
+  });
+
+  html += '</tr></thead><tbody>';
+
+  // Add body rows (skip separator if exists)
+  const startRow = isSeparator ? 2 : 1;
+
+  for (let i = startRow; i < tableLines.length; i++) {
+    const cells = tableLines[i]
+      .split('|')
+      .map(cell => cell.trim())
+      .filter(cell => cell !== '');
+
+    if (cells.length > 0) {
+      html += '<tr>';
+      cells.forEach(cell => {
+        html += `<td>${cell}</td>`;
+      });
+      html += '</tr>';
+    }
+  }
+
+  html += '</tbody></table>';
+
+  return html;
 }

@@ -146,6 +146,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     borderRadius: 8,
                                     backgroundColor: message.sender === 'user' ? '#1890ff' : 'white',
                                     color: message.sender === 'user' ? 'white' : 'black',
+                                    overflowX: 'auto',
                                 }}
                             >
                                 {message.sender === 'bot' ? (
@@ -326,6 +327,65 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 /* Better spacing between elements */
                 :global(.ant-card-body > *:not(:last-child)) {
                     margin-bottom: 4px;
+                }
+
+                /* Table Container - Enable horizontal scroll */
+                :global(.ant-card-body) {
+                    overflow-x: auto;
+                }
+
+                /* Table Styles */
+                :global(.ant-card-body table) {
+                    width: 100%;
+                    min-width: 280px;
+                    border-collapse: collapse;
+                    margin: 8px 0;
+                    font-size: 0.85em;
+                    background: white;
+                    border-radius: 4px;
+                    overflow: hidden;
+                    display: block;
+                    overflow-x: auto;
+                }
+
+                :global(.ant-card-body table thead),
+                :global(.ant-card-body table tbody) {
+                    display: table;
+                    width: 100%;
+                    table-layout: fixed;
+                }
+
+                :global(.ant-card-body table thead) {
+                    background: #f0f5ff;
+                }
+
+                :global(.ant-card-body table th) {
+                    padding: 6px 8px;
+                    text-align: left;
+                    font-weight: 600;
+                    color: #1890ff;
+                    border-bottom: 2px solid #d6e4ff;
+                    font-size: 0.9em;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                :global(.ant-card-body table td) {
+                    padding: 6px 8px;
+                    border-bottom: 1px solid #f0f0f0;
+                    color: #262626;
+                    line-height: 1.5;
+                    word-break: break-word;
+                    vertical-align: top;
+                }
+
+                :global(.ant-card-body table tbody tr:hover) {
+                    background: #fafafa;
+                }
+
+                :global(.ant-card-body table tbody tr:last-child td) {
+                    border-bottom: none;
                 }
             `}</style>
         </Card>
