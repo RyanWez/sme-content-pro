@@ -2,7 +2,7 @@ import React from 'react';
 
 /**
  * AnimatedBilibiliIcon Component
- * Bilibili Icon ကို မျက်လုံးနှစ်ကြိမ်ဆက်တိုက်မှေးခြင်း၊ ၁ စက္ကန့်စောင့်ခြင်း၊ ပြီးမှ ဘယ်/ညာ ကြည့်ခြင်း စသည့် လှုပ်ရှားမှုများဖြင့် ပြသသည်။
+ * Bilibili Icon ကို မျက်လုံးနှစ်ကြိမ်ဆက်တိုက်မှေးခြင်း လှုပ်ရှားမှုဖြင့် ပြသသည်။
  * @param {object} props - Component props
  * @param {string} [props.size='7em'] - Icon အရွယ်အစား (ဥပမာ: '24px', '2em', '100%')
  * @param {string} [props.color='currentColor'] - Icon အရောင် (Tailwind CSS color class သို့မဟုတ် hex code)
@@ -10,84 +10,52 @@ import React from 'react';
  */
 const AnimatedBilibiliIcon = ({ size = '7em', color = 'currentColor', squintAmount = 0.5, ...props }) => {
   // စုစုပေါင်း Animation ကာလကို တွက်ချက်သည်
-  const totalDuration = 5.0; // 5.0 စက္ကန့် (၁ စက္ကန့် စောင့်ချိန် ထည့်သွင်းထား)
+  const totalDuration = 3.0; // 3.0 စက္ကန့် (မှေးခြင်း + စောင့်ဆိုင်းချိန်)
   const squintStrength = squintAmount; // မျက်လုံးမှေးအား (0.5)
 
   // Keyframes ရာခိုင်နှုန်းများကို တွက်ချက်သည် (အချိန်ကိုက် ညှိထားသည်)
-  const p1_squint_1 = (0.3 / totalDuration) * 100;  // 6.0% (ပထမ မှေး)
-  const p2_open_1 = (0.5 / totalDuration) * 100;    // 10.0% (ပထမ ပွင့်)
-  const p3_squint_2 = (0.8 / totalDuration) * 100;  // 16.0% (ဒုတိယ မှေး)
-  const p4_open_2 = (1.0 / totalDuration) * 100;    // 20.0% (ဒုတိယ ပွင့်)
-
-  // *** 1 စက္ကန့် စောင့်ဆိုင်းချိန် (1.0s မှ 2.0s အထိ) ***
-  const p5_wait_over = (2.0 / totalDuration) * 100; // 40.0% (စောင့်ဆိုင်းပြီး)
-  // --------------------------------------------------
-
-  const p6_look_right = (2.4 / totalDuration) * 100; // 48.0% (ညာဘက် ကြည့်)
-  const p7_look_left = (3.0 / totalDuration) * 100;  // 60.0% (ဘယ်ဘက် ကြည့်)
-  const p8_center = (3.6 / totalDuration) * 100;     // 72.0% (ဗဟို ပြန်ရောက်)
-  // 72% မှ 100% (3.6s မှ 5.0s) သည် နောက် loop အတွက် စောင့်ဆိုင်းချိန် (1.4s)
+  const p1_squint_1 = (0.3 / totalDuration) * 100;  // 10.0% (ပထမ မှေး)
+  const p2_open_1 = (0.5 / totalDuration) * 100;    // 16.67% (ပထမ ပွင့်)
+  const p3_squint_2 = (0.8 / totalDuration) * 100;  // 26.67% (ဒုတိယ မှေး)
+  const p4_open_2 = (1.0 / totalDuration) * 100;    // 33.33% (ဒုတိယ ပွင့်)
+  // 33.33% မှ 100% (1.0s မှ 3.0s) သည် နောက် loop အတွက် စောင့်ဆိုင်းချိန် (2s)
 
   // CSS Style ကို <style> tag ထဲတွင် ထည့်သွင်းထားသည်
   const style = `
     @keyframes complex-eye-movement {
       /* 0% - ပုံမှန်အနေအထား (ပွင့်/ဗဟို) */
       0% {
-        transform: scaleY(1) translateX(0);
+        transform: scaleY(1);
         animation-timing-function: ease-in-out; 
       }
       
       /* ${p1_squint_1.toFixed(2)}% - ပထမ မှေးခြင်း */
       ${p1_squint_1.toFixed(2)}% {
-        transform: scaleY(${squintStrength}) translateX(0);
+        transform: scaleY(${squintStrength});
         animation-timing-function: ease-in-out; 
       }
       
       /* ${p2_open_1.toFixed(2)}% - ပထမ ပွင့်ခြင်း */
       ${p2_open_1.toFixed(2)}% {
-        transform: scaleY(1) translateX(0);
+        transform: scaleY(1);
         animation-timing-function: ease-in-out; 
       }
       
       /* ${p3_squint_2.toFixed(2)}% - ဒုတိယ မှေးခြင်း */
       ${p3_squint_2.toFixed(2)}% {
-        transform: scaleY(${squintStrength}) translateX(0);
+        transform: scaleY(${squintStrength});
         animation-timing-function: ease-in-out; 
       }
       
       /* ${p4_open_2.toFixed(2)}% - ဒုတိယ ပွင့်ခြင်း (စောင့်ဆိုင်းမှု စတင်) */
       ${p4_open_2.toFixed(2)}% {
-        transform: scaleY(1) translateX(0);
-        animation-timing-function: linear; /* ၁ စက္ကန့် တိတိ ငြိမ်နေမည် */
-      }
-
-      /* ${p5_wait_over.toFixed(2)}% - ၁ စက္ကန့် စောင့်ပြီး (စောင့်ဆိုင်းမှု ပြီးဆုံး) */
-      ${p5_wait_over.toFixed(2)}% {
-        transform: scaleY(1) translateX(0);
-        animation-timing-function: ease-out; /* ညာဘက်သို့ စကြည့်မည် */
-      }
-
-      /* ${p6_look_right.toFixed(2)}% - ညာဘက်သို့ ကြည့်ခြင်း */
-      ${p6_look_right.toFixed(2)}% {
-        transform: scaleY(1) translateX(3px);
-        animation-timing-function: ease-in-out; 
-      }
-
-      /* ${p7_look_left.toFixed(2)}% - ဘယ်ဘက်သို့ ကြည့်ခြင်း */
-      ${p7_look_left.toFixed(2)}% {
-        transform: scaleY(1) translateX(-2px);
-        animation-timing-function: ease-in; 
-      }
-
-      /* ${p8_center.toFixed(2)}% - ဗဟိုသို့ ပြန်လာခြင်း */
-      ${p8_center.toFixed(2)}% {
-        transform: scaleY(1) translateX(0);
+        transform: scaleY(1);
         animation-timing-function: linear; /* 100% အထိ ငြိမ်နေမည် */
       }
-      
+
       /* 100% - အဆုံး */
       100% {
-        transform: scaleY(1) translateX(0);
+        transform: scaleY(1);
       }
     }
     
