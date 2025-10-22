@@ -150,7 +150,7 @@ export default function DashboardLayout({
           <HeaderBreadcrumb />
         </Header>
         <Content
-          className="ant-layout-content"
+          className="dashboard-content-area"
           style={{
             margin: '24px 16px',
             padding: 24,
@@ -158,8 +158,6 @@ export default function DashboardLayout({
             borderRadius: borderRadiusLG,
             overflow: 'auto',
             height: 'calc(100vh - 64px - 48px)',
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
           }}
         >
           <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>

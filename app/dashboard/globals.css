@@ -32,27 +32,28 @@
 }
 
 /* Smooth scroll behavior */
-.ant-layout-content {
+.dashboard-content-area {
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Optimize scrollbar */
-.ant-layout-content::-webkit-scrollbar {
+.dashboard-content-area::-webkit-scrollbar {
   width: 8px;
 }
 
-.ant-layout-content::-webkit-scrollbar-track {
+.dashboard-content-area::-webkit-scrollbar-track {
   background: #f0f0f0;
   border-radius: 4px;
 }
 
-.ant-layout-content::-webkit-scrollbar-thumb {
+.dashboard-content-area::-webkit-scrollbar-thumb {
   background: #bfbfbf;
   border-radius: 4px;
   transition: background 0.3s ease;
 }
 
-.ant-layout-content::-webkit-scrollbar-thumb:hover {
+.dashboard-content-area::-webkit-scrollbar-thumb:hover {
   background: #8c8c8c;
 }
 
