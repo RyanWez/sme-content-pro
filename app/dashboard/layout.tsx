@@ -29,6 +29,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -56,6 +57,8 @@ export default function DashboardLayout({
     } else if (e.key === '2-3') {
       router.push('/dashboard/content/product');
     }
+    // Close mobile menu after navigation
+    setMobileMenuOpen(false);
   };
 
   const menuItems = [
@@ -97,85 +100,277 @@ export default function DashboardLayout({
     <>
       <SuppressAntdWarning />
       <Layout style={{ minHeight: '100vh' }}>
-        <Sider trigger={null} collapsible collapsed={collapsed}>
-        <div
-          style={{
-            height: 32,
-            margin: 16,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: collapsed ? 'center' : 'flex-start',
-            gap: 8,
-            color: 'white',
-            fontSize: 18,
-            fontWeight: 600,
-          }}
+        {/* Desktop Sidebar */}
+        <Sider
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          className="desktop-sidebar"
+          breakpoint="lg"
         >
-          <ContentBrushPen style={{ fontSize: 24, flexShrink: 0 }} />
-          {!collapsed && <span>SME</span>}
-        </div>
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={getSelectedKey()}
-          items={menuItems}
-          onClick={handleMenuClick}
-        />
-      </Sider>
-      <Layout style={{ height: '100vh', overflow: 'hidden' }}>
-        <Header
-          style={{
-            padding: 0,
-            background: colorBgContainer,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
-            paddingRight: 24,
-            position: 'sticky',
-            top: 0,
-            zIndex: 1,
-          }}
-        >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
+          <div
             style={{
-              fontSize: '16px',
-              width: 64,
-              height: 64,
-              marginLeft: 0,
+              height: 32,
+              margin: 16,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: collapsed ? 'center' : 'flex-start',
+              gap: 8,
+              color: 'white',
+              fontSize: 18,
+              fontWeight: 600,
             }}
+          >
+            <ContentBrushPen style={{ fontSize: 24, flexShrink: 0 }} />
+            {!collapsed && <span>SME</span>}
+          </div>
+          <Menu
+            theme="dark"
+            mode="inline"
+            selectedKeys={getSelectedKey()}
+            items={menuItems}
+            onClick={handleMenuClick}
           />
-          <HeaderBreadcrumb />
-        </Header>
-        <Content
-          className="dashboard-content-area"
-          style={{
-            margin: '24px 16px',
-            padding: 24,
-            background: colorBgContainer,
-            borderRadius: borderRadiusLG,
-            overflow: 'auto',
-            height: 'calc(100vh - 64px - 48px)',
-          }}
-        >
-          <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
-        </Content>
+        </Sider>
+        <Layout style={{ height: '100vh', overflow: 'hidden' }}>
+          <Header
+            style={{
+              padding: 0,
+              background: colorBgContainer,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 16,
+              paddingRight: 24,
+              position: 'sticky',
+              top: 0,
+              zIndex: 1,
+            }}
+          >
+            {/* Desktop Toggle Button */}
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              className="desktop-toggle-btn"
+              style={{
+                fontSize: '16px',
+                width: 64,
+                height: 64,
+                marginLeft: 0,
+              }}
+            />
+            {/* Mobile Menu Button */}
+            <Button
+              type="text"
+              icon={<MenuUnfoldOutlined />}
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="mobile-menu-btn"
+              style={{
+                fontSize: '16px',
+                width: 64,
+                height: 64,
+                marginLeft: 0,
+                display: 'none',
+              }}
+            />
+            <HeaderBreadcrumb />
+          </Header>
+          <Content
+            className="dashboard-content-area"
+            style={{
+              margin: '24px 16px',
+              padding: 24,
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+              overflow: 'auto',
+              height: 'calc(100vh - 64px - 48px)',
+            }}
+          >
+            <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
+          </Content>
+        </Layout>
+
+        {/* ChatBot FloatButton */}
+        <FloatButton
+          icon={<CustomerServiceOutlined />}
+          type="primary"
+          style={{ insetInlineEnd: 24 }}
+          onClick={() => setChatOpen(!chatOpen)}
+          tooltip="AI Assistant"
+        />
+
+        {/* ChatBot Interface */}
+        {chatOpen && <ChatBot onClose={() => setChatOpen(false)} />}
+
+        {/* Mobile Sidebar Drawer */}
+        <>
+          <div
+            className={`mobile-sidebar-overlay ${mobileMenuOpen ? 'active' : ''}`}
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          <div
+            className={`mobile-sidebar ${mobileMenuOpen ? 'active' : ''}`}
+          >
+            <div
+              style={{
+                height: 64,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '0 16px',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  color: 'white',
+                  fontSize: 18,
+                  fontWeight: 600,
+                }}
+              >
+                <ContentBrushPen style={{ fontSize: 24 }} />
+                <span>SME</span>
+              </div>
+              <Button
+                type="text"
+                icon={<MenuFoldOutlined />}
+                onClick={() => setMobileMenuOpen(false)}
+                style={{ color: 'white' }}
+              />
+            </div>
+            <Menu
+              theme="dark"
+              mode="inline"
+              selectedKeys={getSelectedKey()}
+              items={menuItems}
+              onClick={handleMenuClick}
+              style={{ flex: 1, borderRight: 0 }}
+            />
+          </div>
+        </>
       </Layout>
 
-      {/* ChatBot FloatButton */}
-      <FloatButton
-        icon={<CustomerServiceOutlined />}
-        type="primary"
-        style={{ insetInlineEnd: 24 }}
-        onClick={() => setChatOpen(!chatOpen)}
-        tooltip="AI Assistant"
-      />
+      {/* Responsive Styles */}
+      <style jsx global>{`
+        /* Smooth Animations */
+        .mobile-sidebar-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.45);
+          z-index: 999;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                      visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: none;
+        }
 
-      {/* ChatBot Interface */}
-      {chatOpen && <ChatBot onClose={() => setChatOpen(false)} />}
-      </Layout>
+        .mobile-sidebar-overlay.active {
+          opacity: 1;
+          visibility: visible;
+        }
+
+        .mobile-sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          width: 280px;
+          max-width: 85vw;
+          background-color: #001529;
+          z-index: 1000;
+          display: none;
+          flex-direction: column;
+          transform: translateX(-100%);
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+          will-change: transform;
+        }
+
+        .mobile-sidebar.active {
+          transform: translateX(0);
+        }
+
+        /* Prevent body scroll when mobile menu is open */
+        body:has(.mobile-sidebar.active) {
+          overflow: hidden;
+        }
+
+        /* Optimize menu animations */
+        .mobile-sidebar .ant-menu {
+          overflow-y: auto;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .mobile-sidebar .ant-menu-item,
+        .mobile-sidebar .ant-menu-submenu {
+          transition: background-color 0.2s ease;
+        }
+
+        /* Desktop - Show sidebar, hide mobile menu button */
+        .desktop-sidebar {
+          display: block !important;
+        }
+        .desktop-toggle-btn {
+          display: inline-flex !important;
+        }
+        .mobile-menu-btn {
+          display: none !important;
+        }
+        .mobile-sidebar,
+        .mobile-sidebar-overlay {
+          display: none !important;
+        }
+
+        /* Tablet & Mobile (< 1024px) - Hide desktop sidebar, show mobile menu */
+        @media (max-width: 1023px) {
+          .desktop-sidebar {
+            display: none !important;
+          }
+          .desktop-toggle-btn {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: inline-flex !important;
+          }
+          .mobile-sidebar-overlay {
+            display: block !important;
+          }
+          .mobile-sidebar {
+            display: flex !important;
+          }
+        }
+
+        /* Adjust content margin on mobile */
+        @media (max-width: 1023px) {
+          .ant-layout {
+            margin-left: 0 !important;
+          }
+        }
+
+        /* Small mobile optimization */
+        @media (max-width: 480px) {
+          .mobile-sidebar {
+            width: 260px;
+            max-width: 90vw;
+          }
+        }
+
+        /* Performance optimizations */
+        @media (prefers-reduced-motion: reduce) {
+          .mobile-sidebar,
+          .mobile-sidebar-overlay {
+            transition: none !important;
+          }
+        }
+      `}</style>
     </>
   );
 }

@@ -44,19 +44,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
     return (
         <Card
-            style={{
-                position: 'fixed',
-                bottom: 90,
-                right: 24,
-                width: 450,
-                height: 550,
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                zIndex: 1000,
-                display: 'flex',
-                flexDirection: 'column',
-                borderRadius: 16,
-                overflow: 'hidden',
-            }}
+            className="chatbot-card"
             styles={{
                 body: {
                     padding: 0,
@@ -68,6 +56,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
         >
             {/* Header */}
             <div
+                className="chatbot-header"
                 style={{
                     padding: '16px',
                     borderBottom: '1px solid #f0f0f0',
@@ -103,11 +92,13 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
             {/* Messages */}
             <div
+                className="chatbot-messages"
                 style={{
                     flex: 1,
                     overflowY: 'auto',
                     padding: '16px',
                     backgroundColor: '#f5f5f5',
+                    WebkitOverflowScrolling: 'touch',
                 }}
             >
                 {messages.map((message) => (
@@ -143,13 +134,15 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     color: message.sender === 'user' ? '#fff' : undefined,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    justifyContent: 'center'
+                                    justifyContent: 'center',
+                                    flexShrink: 0
                                 }}
                                 size={40}
                             />
                             <div
+                                className="message-bubble"
                                 style={{
-                                    maxWidth: 320,
+                                    maxWidth: 'calc(100% - 56px)',
                                     padding: '10px 14px',
                                     borderRadius: 8,
                                     backgroundColor: message.sender === 'user' ? '#1890ff' : 'white',
@@ -215,8 +208,98 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 </Space.Compact>
             </div>
 
-            {/* Animations */}
+            {/* Animations & Responsive Styles */}
             <style jsx>{`
+                /* Responsive Styles */
+                :global(.chatbot-card) {
+                    position: fixed;
+                    bottom: 90px;
+                    right: 24px;
+                    width: 450px;
+                    height: 550px;
+                    max-height: calc(100vh - 120px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    display: flex;
+                    flex-direction: column;
+                    border-radius: 16px;
+                    overflow: hidden;
+                }
+
+                /* Laptop အသေး (1024px - 1366px) */
+                @media (max-width: 1366px) {
+                    :global(.chatbot-card) {
+                        width: 400px;
+                        height: 500px;
+                        right: 16px;
+                        bottom: 80px;
+                    }
+                }
+
+                /* Tablet (768px - 1023px) */
+                @media (max-width: 1023px) {
+                    :global(.chatbot-card) {
+                        width: 380px;
+                        height: 480px;
+                        right: 12px;
+                        bottom: 70px;
+                    }
+                }
+
+                /* Mobile Landscape & Small Tablet (640px - 767px) */
+                @media (max-width: 767px) {
+                    :global(.chatbot-card) {
+                        width: calc(100vw - 24px);
+                        height: calc(100vh - 100px);
+                        max-height: 500px;
+                        right: 12px;
+                        left: 12px;
+                        bottom: 70px;
+                        border-radius: 12px;
+                    }
+                }
+
+                /* Mobile Portrait (< 640px) */
+                @media (max-width: 639px) {
+                    :global(.chatbot-card) {
+                        width: calc(100vw - 16px);
+                        height: calc(100vh - 80px);
+                        max-height: none;
+                        right: 8px;
+                        left: 8px;
+                        bottom: 60px;
+                        border-radius: 12px;
+                    }
+                }
+
+                /* Very Small Mobile (< 375px) */
+                @media (max-width: 374px) {
+                    :global(.chatbot-card) {
+                        width: calc(100vw - 8px);
+                        height: calc(100vh - 70px);
+                        right: 4px;
+                        left: 4px;
+                        bottom: 55px;
+                        border-radius: 8px;
+                    }
+                }
+
+                /* Message Bubble Responsive */
+                @media (max-width: 767px) {
+                    :global(.message-bubble) {
+                        max-width: calc(100% - 48px) !important;
+                        font-size: 14px;
+                    }
+                }
+
+                @media (max-width: 374px) {
+                    :global(.message-bubble) {
+                        max-width: calc(100% - 48px) !important;
+                        font-size: 13px;
+                        padding: 8px 12px !important;
+                    }
+                }
+
                 /* Thinking Dots Animation */
                 @keyframes thinking-dot {
                     0%, 60%, 100% {
