@@ -8,7 +8,7 @@ export default function SuppressAntdWarning() {
     const originalWarn = console.warn;
     const originalError = console.error;
 
-    console.warn = (...args: any[]) => {
+    console.warn = (...args: unknown[]) => {
       const message = String(args[0]);
       if (
         message.includes('[antd: compatible]') ||
@@ -20,7 +20,7 @@ export default function SuppressAntdWarning() {
       originalWarn.apply(console, args);
     };
 
-    console.error = (...args: any[]) => {
+    console.error = (...args: unknown[]) => {
       const message = String(args[0]);
       if (
         message.includes('[antd: compatible]') ||

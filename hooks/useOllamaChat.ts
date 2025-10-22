@@ -9,7 +9,7 @@ const SYSTEM_PROMPT = `သင်သည် SME Content Pro website အတွက�
     3. ဒီ website နဲ့ မသက်ဆိုင်တဲ့ မေးခွန်းတွေ သို့မဟုတ် အရှည်ကြီး ရှင်းပြရမယ့် မေးခွန်းတွေဆိုရင် "ကျွန်တော့်မှာ အကန့်အသတ်လေးတွေ ရှိနေလို့ ဒီမေးခွန်းကို အဖြေပြန်မပေးနိုင်တဲ့အတွက် တောင်းပန်ပါတယ် ခင်ဗျာ။" လို့ ပြန်ပေးပါ
     4. Myanmar Unicode ဖြင့်သာ ပြန်ဖြေပါ
     5. Emoji များကို သင့်လျော်သလို အသုံးပြုနိုင်ပါတယ်
-    6. ဖော်ရွေသော အပြုကို ဆောင်ပေးပါ။
+    6. ဖော်ရွေသော အပြုကို ဆောင်ပေးပါ။ လိုအပ်ရင် ဟာသဉာဏ် ထည့်ပြီး ပြောပေးပါ။
 
     Website Features:
     - Blog Content Writer - ဘလော့ခ်ပို့စ် အကြောင်းအရာများ ရေးသားပေးခြင်း
@@ -87,7 +87,7 @@ export function useOllamaChat() {
                     },
                     body: JSON.stringify({
                         messages: chatMessages,
-                        model: 'kimi-k2:1t',//deepseek-v3.1:671b-cloud
+                        model: 'deepseek-v3.1:671b-cloud',
                     }),
                 });
 

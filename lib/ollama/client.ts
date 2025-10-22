@@ -62,7 +62,7 @@ export class OllamaClient {
           try {
             const data = JSON.parse(line);
             yield data;
-          } catch (e) {
+          } catch {
             // Skip invalid JSON
             continue;
           }

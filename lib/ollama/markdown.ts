@@ -81,7 +81,7 @@ export function parseMarkdown(text: string): string {
         inList = true;
         listType = 'ul';
       }
-      let content = trimmedLine.replace(/^[\-\*\•]\s+/, '');
+      const content = trimmedLine.replace(/^[\-\*\•]\s+/, '');
       processedLines.push(`<li>${content}</li>`);
     } else if (trimmedLine === '' && inList) {
       processedLines.push(`</${listType}>`);
