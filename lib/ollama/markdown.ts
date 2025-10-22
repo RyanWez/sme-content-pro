@@ -124,7 +124,8 @@ export function parseMarkdown(text: string): string {
       trimmed.startsWith('<blockquote>') ||
       trimmed.startsWith('<a') ||
       trimmed.startsWith('<hr') ||
-      trimmed.startsWith('<table')
+      trimmed.startsWith('<table') ||
+      trimmed.startsWith('<div class="table-wrapper">')
     ) {
       return trimmed;
     }
@@ -281,5 +282,6 @@ function convertTableToHtml(tableLines: string[]): string | null {
 
   html += '</tbody></table>';
 
-  return html;
+  // Wrap table in a scrollable container
+  return `<div class="table-wrapper">${html}</div>`;
 }

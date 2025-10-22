@@ -329,62 +329,78 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     margin-bottom: 4px;
                 }
 
-                /* Table Container - Enable horizontal scroll */
-                :global(.ant-card-body) {
+                /* Table Wrapper - Scrollable Container */
+                :global(.table-wrapper) {
+                    width: 100%;
                     overflow-x: auto;
+                    margin: 8px 0;
+                    border-radius: 4px;
+                    border: 1px solid #f0f0f0;
+                }
+
+                :global(.table-wrapper::-webkit-scrollbar) {
+                    height: 6px;
+                }
+
+                :global(.table-wrapper::-webkit-scrollbar-track) {
+                    background: #f5f5f5;
+                    border-radius: 3px;
+                }
+
+                :global(.table-wrapper::-webkit-scrollbar-thumb) {
+                    background: #d9d9d9;
+                    border-radius: 3px;
+                }
+
+                :global(.table-wrapper::-webkit-scrollbar-thumb:hover) {
+                    background: #bfbfbf;
                 }
 
                 /* Table Styles */
-                :global(.ant-card-body table) {
+                :global(.table-wrapper table) {
                     width: 100%;
-                    min-width: 280px;
+                    min-width: 400px;
                     border-collapse: collapse;
-                    margin: 8px 0;
+                    margin: 0;
                     font-size: 0.85em;
                     background: white;
-                    border-radius: 4px;
-                    overflow: hidden;
-                    display: block;
-                    overflow-x: auto;
                 }
 
-                :global(.ant-card-body table thead),
-                :global(.ant-card-body table tbody) {
+                :global(.table-wrapper table thead),
+                :global(.table-wrapper table tbody) {
                     display: table;
                     width: 100%;
-                    table-layout: fixed;
+                    table-layout: auto;
                 }
 
-                :global(.ant-card-body table thead) {
+                :global(.table-wrapper table thead) {
                     background: #f0f5ff;
                 }
 
-                :global(.ant-card-body table th) {
-                    padding: 6px 8px;
+                :global(.table-wrapper table th) {
+                    padding: 8px 10px;
                     text-align: left;
                     font-weight: 600;
                     color: #1890ff;
                     border-bottom: 2px solid #d6e4ff;
                     font-size: 0.9em;
                     white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
                 }
 
-                :global(.ant-card-body table td) {
-                    padding: 6px 8px;
+                :global(.table-wrapper table td) {
+                    padding: 8px 10px;
                     border-bottom: 1px solid #f0f0f0;
                     color: #262626;
-                    line-height: 1.5;
-                    word-break: break-word;
+                    line-height: 1.6;
                     vertical-align: top;
+                    min-width: 80px;
                 }
 
-                :global(.ant-card-body table tbody tr:hover) {
+                :global(.table-wrapper table tbody tr:hover) {
                     background: #fafafa;
                 }
 
-                :global(.ant-card-body table tbody tr:last-child td) {
+                :global(.table-wrapper table tbody tr:last-child td) {
                     border-bottom: none;
                 }
             `}</style>
