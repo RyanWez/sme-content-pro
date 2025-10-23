@@ -259,24 +259,29 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                                         color: 'black',
                                                         overflowWrap: 'break-word',
                                                         wordWrap: 'break-word',
+                                                        wordBreak: 'break-word',
+                                                        whiteSpace: 'pre-wrap',
+                                                        lineHeight: '1.8',
+                                                        width: '100%',
                                                     }}
                                                 />
                                             ) : (
-                                                <span className="thinking-dots">
+                                                <div className="thinking-dots">
                                                     <span>.</span>
                                                     <span>.</span>
                                                     <span>.</span>
-                                                </span>
+                                                </div>
                                             )}
                                         </>
                                     ) : (
                                         <span style={{
                                             color: 'white',
                                             display: 'inline-block',
-                                            wordBreak: 'normal',
-                                            overflowWrap: 'anywhere',
+                                            wordBreak: 'break-word',
+                                            overflowWrap: 'break-word',
                                             whiteSpace: 'pre-wrap',
-                                            minWidth: 'fit-content',
+                                            lineHeight: '1.8',
+                                            width: '100%',
                                         }}>
                                             {message.text}
                                         </span>
@@ -606,7 +611,9 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 }
 
                 .thinking-dots {
-                    display: inline-block;
+                    display: flex;
+                    align-items: center;
+                    gap: 3px;
                     color: #1890ff;
                     font-size: 1.5em;
                     line-height: 1;
@@ -614,6 +621,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
                 .thinking-dots span {
                     animation: thinking-dot 1.4s infinite;
+                    display: inline-block;
                 }
 
                 .thinking-dots span:nth-child(1) {
@@ -649,23 +657,26 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 }
 
                 :global(.ant-card-body ul) {
-                    margin: 6px 0;
-                    padding-left: 0;
-                    list-style-type: none;
+                    margin: 8px 0;
+                    padding-left: 20px;
+                    list-style-type: disc;
+                    list-style-position: outside;
+                }
+
+                :global(.ant-card-body ol) {
+                    margin: 8px 0;
+                    padding-left: 20px;
+                    list-style-type: decimal;
+                    list-style-position: outside;
                 }
 
                 :global(.ant-card-body li) {
-                    margin: 3px 0;
-                    line-height: 1.7;
-                    position: relative;
-                    padding-left: 0;
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 6px;
-                }
-
-                :global(.ant-card-body li::before) {
-                    display: none;
+                    margin: 6px 0;
+                    line-height: 1.8;
+                    padding-left: 8px;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
+                    white-space: normal;
                 }
 
                 :global(.ant-card-body h1),
@@ -691,8 +702,11 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
                 :global(.ant-card-body p) {
                     margin: 4px 0;
-                    line-height: 1.7;
+                    line-height: 1.8;
                     color: #262626;
+                    word-break: break-word;
+                    overflow-wrap: break-word;
+                    white-space: pre-wrap;
                 }
 
                 :global(.ant-card-body p:first-child) {
@@ -708,15 +722,16 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     font-size: 14px;
                     overflow-wrap: break-word;
                     word-wrap: break-word;
-                    word-break: normal;
+                    word-break: break-word;
                 }
 
                 /* Message bubble text wrapping */
                 :global(.message-bubble) {
                     overflow-wrap: break-word;
                     word-wrap: break-word;
-                    word-break: normal;
-                    hyphens: auto;
+                    word-break: break-word;
+                    white-space: pre-wrap;
+                    line-height: 1.8;
                 }
 
                 :global(.message-bubble p),
@@ -724,7 +739,11 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 :global(.message-bubble div) {
                     overflow-wrap: break-word;
                     word-wrap: break-word;
-                    word-break: normal;
+                    word-break: break-word;
+                    white-space: pre-wrap;
+                    line-height: 1.8;
+                    width: 100%;
+                    display: block;
                 }
 
                 /* Better spacing between elements */
