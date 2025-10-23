@@ -335,14 +335,19 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 :global(.swipe-indicator) {
                     display: none;
                     width: 40px;
-                    height: 4px;
-                    background: rgba(255, 255, 255, 0.3);
-                    border-radius: 2px;
-                    margin: 8px auto 0;
+                    height: 5px;
+                    background: rgba(255, 255, 255, 0.4);
+                    border-radius: 3px;
                     position: absolute;
-                    top: 0;
+                    top: 8px;
                     left: 50%;
                     transform: translateX(-50%);
+                    z-index: 10;
+                    transition: background 0.2s ease;
+                }
+
+                :global(.swipe-indicator:hover) {
+                    background: rgba(255, 255, 255, 0.6);
                 }
 
                 /* Responsive Styles */
@@ -399,7 +404,11 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                         right: 12px;
                         left: 12px;
                         bottom: 70px;
-                        border-radius: 12px;
+                        border-radius: 16px;
+                    }
+
+                    :global(.chatbot-header) {
+                        border-radius: 16px 16px 0 0;
                     }
                 }
 
@@ -413,6 +422,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
                     :global(.swipe-indicator) {
                         display: block;
+                        top: 8px;
                     }
 
                     :global(.chatbot-card) {
@@ -425,8 +435,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                         left: 0;
                         bottom: 0;
                         top: 0;
-                        border-radius: 0;
-                        box-shadow: none;
+                        border-radius: 20px 20px 0 0;
+                        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
                         transform: translateY(100%);
                     }
 
@@ -436,7 +446,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
                     :global(.chatbot-header) {
                         padding: max(12px, env(safe-area-inset-top)) 16px 12px !important;
-                        padding-top: calc(max(12px, env(safe-area-inset-top)) + 8px) !important;
+                        padding-top: calc(max(12px, env(safe-area-inset-top)) + 16px) !important;
+                        border-radius: 20px 20px 0 0;
                     }
 
                     :global(.chatbot-messages) {
@@ -464,11 +475,13 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                         left: 0;
                         bottom: 0;
                         top: 0;
-                        border-radius: 0;
+                        border-radius: 16px 16px 0 0;
                     }
 
                     :global(.chatbot-header) {
                         padding: 10px 12px !important;
+                        padding-top: calc(max(10px, env(safe-area-inset-top)) + 14px) !important;
+                        border-radius: 16px 16px 0 0;
                     }
 
                     :global(.chatbot-messages) {
