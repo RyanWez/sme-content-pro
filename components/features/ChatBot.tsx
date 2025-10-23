@@ -34,27 +34,55 @@ export default function ChatBot({ onClose }: ChatBotProps) {
     }, []);
 
     const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end'
+            });
+        }
     };
 
     useEffect(() => {
-        scrollToBottom();
+        // Debounce scroll to improve performance
+        const timeoutId = setTimeout(() => {
+            scrollToBottom();
+        }, 100);
+
+        return () => clearTimeout(timeoutId);
     }, [messages]);
 
-    // Swipe to close gesture
+    // Swipe to close gesture (optimized)
     const handleTouchStart = (e: React.TouchEvent) => {
         setTouchStart(e.targetTouches[0].clientY);
-    };
-
-    const handleTouchMove = (e: React.TouchEvent) => {
         setTouchEnd(e.targetTouches[0].clientY);
     };
 
+    const handleTouchMove = (e: React.TouchEvent) => {
+        const currentY = e.targetTouches[0].clientY;
+        setTouchEnd(currentY);
+
+        // Visual feedback during swipe
+        const diff = currentY - touchStart;
+        if (diff > 0 && chatCardRef.current) {
+            chatCardRef.current.style.transform = `translateY(${Math.min(diff, 100)}px)`;
+        }
+    };
+
     const handleTouchEnd = () => {
-        if (touchStart - touchEnd < -100) {
-            // Swiped down
+        const swipeDistance = touchEnd - touchStart;
+
+        if (chatCardRef.current) {
+            chatCardRef.current.style.transform = '';
+        }
+
+        // Close if swiped down more than 100px
+        if (swipeDistance > 100) {
             handleClose();
         }
+
+        // Reset
+        setTouchStart(0);
+        setTouchEnd(0);
     };
 
     const handleClose = () => {
@@ -69,6 +97,12 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
         const message = inputValue;
         setInputValue('');
+
+        // Scroll to bottom immediately when sending
+        requestAnimationFrame(() => {
+            scrollToBottom();
+        });
+
         await sendMessage(message);
     };
 
@@ -82,9 +116,12 @@ export default function ChatBot({ onClose }: ChatBotProps) {
     return (
         <>
             {/* Backdrop Overlay */}
-            <div 
+            <div
                 className={`chatbot-backdrop ${isVisible ? 'visible' : ''}`}
                 onClick={handleClose}
+                role="button"
+                aria-label="Close chat"
+                tabIndex={-1}
             />
 
             {/* ChatBot Card */}
@@ -131,7 +168,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                             }}
                             size={40}
                         />
-                        <Text strong style={{ color: 'white', fontSize: 16 }}>
+                        <Text strong style={{ color: 'white', fontSize: 16, userSelect: 'none' }}>
                             AI Assistant
                         </Text>
                     </Space>
@@ -140,130 +177,138 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                         icon={<CloseOutlined />}
                         onClick={handleClose}
                         style={{ color: 'white' }}
+                        aria-label="Close chat"
                     />
                 </div>
 
-            {/* Messages */}
-            <div
-                className="chatbot-messages"
-                style={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    padding: '16px',
-                    backgroundColor: '#f5f5f5',
-                    WebkitOverflowScrolling: 'touch',
-                }}
-            >
-                {messages.map((message) => (
-                    <div
-                        key={message.id}
-                        style={{
-                            display: 'flex',
-                            justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
-                            marginBottom: 12,
-                        }}
-                    >
+                {/* Messages */}
+                <div
+                    className="chatbot-messages"
+                    role="log"
+                    aria-live="polite"
+                    aria-label="Chat messages"
+                    style={{
+                        flex: 1,
+                        overflowY: 'auto',
+                        padding: '16px',
+                        backgroundColor: '#f5f5f5',
+                        WebkitOverflowScrolling: 'touch',
+                    }}
+                >
+                    {messages.map((message, index) => (
                         <div
+                            key={message.id}
+                            role="article"
+                            aria-label={`${message.sender === 'user' ? 'Your' : 'AI'} message`}
                             style={{
                                 display: 'flex',
-                                flexDirection: message.sender === 'user' ? 'row-reverse' : 'row',
-                                gap: 8,
-                                alignItems: 'flex-start',
+                                justifyContent: message.sender === 'user' ? 'flex-end' : 'flex-start',
+                                marginBottom: 12,
+                                animation: `slideIn 0.3s ease-out ${index * 0.05}s both`,
                             }}
                         >
-                            <Avatar
-                                icon={
-                                    message.sender === 'user' ? (
-                                        <UserOutlined />
-                                    ) : (
-                                        <AnimatedBotIcon size={28} />
-                                    )
-                                }
-                                style={{
-                                    backgroundColor: message.sender === 'user' ? '#1890ff' : undefined,
-                                    background: message.sender === 'user'
-                                        ? '#1890ff'
-                                        : 'linear-gradient(135deg, #e4e8f9ff 0%, #ede9f1ff 100%)',
-                                    color: message.sender === 'user' ? '#fff' : undefined,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    flexShrink: 0
-                                }}
-                                size={40}
-                            />
                             <div
-                                className="message-bubble"
                                 style={{
-                                    maxWidth: 'calc(100% - 56px)',
-                                    padding: '10px 14px',
-                                    borderRadius: 8,
-                                    backgroundColor: message.sender === 'user' ? '#1890ff' : 'white',
-                                    color: message.sender === 'user' ? 'white' : 'black',
-                                    overflowX: 'auto',
+                                    display: 'flex',
+                                    flexDirection: message.sender === 'user' ? 'row-reverse' : 'row',
+                                    gap: 8,
+                                    alignItems: 'flex-start',
                                 }}
                             >
-                                {message.sender === 'bot' ? (
-                                    <>
-                                        {message.text ? (
-                                            <div
-                                                dangerouslySetInnerHTML={{
-                                                    __html: parseMarkdown(message.text),
-                                                }}
-                                                style={{
-                                                    color: 'black',
-                                                    wordBreak: 'break-word',
-                                                }}
-                                            />
+                                <Avatar
+                                    icon={
+                                        message.sender === 'user' ? (
+                                            <UserOutlined />
                                         ) : (
-                                            <span className="thinking-dots">
-                                                <span>.</span>
-                                                <span>.</span>
-                                                <span>.</span>
-                                            </span>
-                                        )}
-                                    </>
-                                ) : (
-                                    <Text style={{ color: 'white' }}>{message.text}</Text>
-                                )}
+                                            <AnimatedBotIcon size={28} />
+                                        )
+                                    }
+                                    style={{
+                                        backgroundColor: message.sender === 'user' ? '#1890ff' : undefined,
+                                        background: message.sender === 'user'
+                                            ? '#1890ff'
+                                            : 'linear-gradient(135deg, #e4e8f9ff 0%, #ede9f1ff 100%)',
+                                        color: message.sender === 'user' ? '#fff' : undefined,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexShrink: 0
+                                    }}
+                                    size={40}
+                                />
+                                <div
+                                    className="message-bubble"
+                                    style={{
+                                        maxWidth: 'calc(100% - 56px)',
+                                        padding: '10px 14px',
+                                        borderRadius: 8,
+                                        backgroundColor: message.sender === 'user' ? '#1890ff' : 'white',
+                                        color: message.sender === 'user' ? 'white' : 'black',
+                                        overflowX: 'auto',
+                                    }}
+                                >
+                                    {message.sender === 'bot' ? (
+                                        <>
+                                            {message.text ? (
+                                                <div
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: parseMarkdown(message.text),
+                                                    }}
+                                                    style={{
+                                                        color: 'black',
+                                                        wordBreak: 'break-word',
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span className="thinking-dots">
+                                                    <span>.</span>
+                                                    <span>.</span>
+                                                    <span>.</span>
+                                                </span>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <Text style={{ color: 'white' }}>{message.text}</Text>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
-                <div ref={messagesEndRef} />
-            </div>
+                    ))}
+                    <div ref={messagesEndRef} />
+                </div>
 
-            {/* Input */}
-            <div
-                className="chatbot-input"
-                style={{
-                    padding: '12px',
-                    borderTop: '1px solid #f0f0f0',
-                    backgroundColor: 'white',
-                }}
-            >
-                <Space.Compact style={{ width: '100%' }}>
-                    <TextArea
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder="မက်ဆေ့ခ်ျရေးပါ..."
-                        autoSize={{ minRows: 1, maxRows: 3 }}
-                        style={{ resize: 'none' }}
-                        disabled={isLoading}
-                    />
-                    <Button
-                        type="primary"
-                        icon={<SendOutlined />}
-                        onClick={handleSend}
-                        disabled={!inputValue.trim() || isLoading}
-                        loading={isLoading}
-                    />
-                </Space.Compact>
-            </div>
+                {/* Input */}
+                <div
+                    className="chatbot-input"
+                    style={{
+                        padding: '12px',
+                        borderTop: '1px solid #f0f0f0',
+                        backgroundColor: 'white',
+                    }}
+                >
+                    <Space.Compact style={{ width: '100%' }}>
+                        <TextArea
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            onKeyDown={handleKeyDown}
+                            placeholder="မက်ဆေ့ခ်ျရေးပါ..."
+                            autoSize={{ minRows: 1, maxRows: 3 }}
+                            style={{ resize: 'none' }}
+                            disabled={isLoading}
+                        />
+                        <Button
+                            type="primary"
+                            icon={<SendOutlined />}
+                            onClick={handleSend}
+                            disabled={!inputValue.trim() || isLoading}
+                            loading={isLoading}
+                            aria-label="Send message"
+                        />
+                    </Space.Compact>
+                </div>
 
-            {/* Animations & Responsive Styles */}
-            <style jsx>{`
+                {/* Animations & Responsive Styles */}
+                <style jsx>{`
                 /* Backdrop Overlay */
                 :global(.chatbot-backdrop) {
                     position: fixed;
@@ -496,8 +541,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     }
 
                     /* Optimize animations for mobile */
-                    :global(.chatbot-card),
-                    :global(.chatbot-backdrop) {
+                    :global(.chatbot-card.visible),
+                    :global(.chatbot-backdrop.visible) {
                         will-change: transform, opacity;
                     }
 
@@ -505,6 +550,24 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     :global(.ant-btn),
                     :global(.message-bubble) {
                         -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+                    }
+
+                    /* Disable text selection on header */
+                    :global(.chatbot-header) {
+                        -webkit-user-select: none;
+                        user-select: none;
+                    }
+                }
+
+                /* Message Slide In Animation */
+                @keyframes slideIn {
+                    from {
+                        opacity: 0;
+                        transform: translateY(10px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
                     }
                 }
 
@@ -705,9 +768,19 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 /* Performance optimizations */
                 @media (prefers-reduced-motion: reduce) {
                     :global(.chatbot-card),
-                    :global(.chatbot-backdrop) {
+                    :global(.chatbot-backdrop),
+                    :global([role="article"]) {
                         transition: none !important;
+                        animation: none !important;
                     }
+                }
+
+                /* GPU acceleration */
+                :global(.chatbot-card),
+                :global(.chatbot-backdrop),
+                :global(.message-bubble) {
+                    transform: translateZ(0);
+                    -webkit-transform: translateZ(0);
                 }
 
                 /* Landscape mode optimization */
@@ -721,7 +794,7 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     }
                 }
             `}</style>
-        </Card>
+            </Card>
         </>
     );
 }
