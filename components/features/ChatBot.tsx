@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Card, Input, Button, Avatar, Space, Typography } from 'antd';
 import { SendOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons';
 import AnimatedBotIcon from '../ui/AnimatedBotIcon';
@@ -16,8 +16,22 @@ interface ChatBotProps {
 
 export default function ChatBot({ onClose }: ChatBotProps) {
     const { messages, isLoading, sendMessage } = useOllamaChat();
-    const [inputValue, setInputValue] = React.useState('');
+    const [inputValue, setInputValue] = useState('');
+    const [isVisible, setIsVisible] = useState(false);
+    const [touchStart, setTouchStart] = useState(0);
+    const [touchEnd, setTouchEnd] = useState(0);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const chatCardRef = useRef<HTMLDivElement>(null);
+
+    // Mount animation
+    useEffect(() => {
+        setIsVisible(true);
+        // Prevent body scroll on mobile
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -26,6 +40,29 @@ export default function ChatBot({ onClose }: ChatBotProps) {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    // Swipe to close gesture
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setTouchStart(e.targetTouches[0].clientY);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        setTouchEnd(e.targetTouches[0].clientY);
+    };
+
+    const handleTouchEnd = () => {
+        if (touchStart - touchEnd < -100) {
+            // Swiped down
+            handleClose();
+        }
+    };
+
+    const handleClose = () => {
+        setIsVisible(false);
+        setTimeout(() => {
+            onClose();
+        }, 300);
+    };
 
     const handleSend = async () => {
         if (!inputValue.trim() || isLoading) return;
@@ -43,52 +80,68 @@ export default function ChatBot({ onClose }: ChatBotProps) {
     };
 
     return (
-        <Card
-            className="chatbot-card"
-            styles={{
-                body: {
-                    padding: 0,
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                },
-            }}
-        >
-            {/* Header */}
-            <div
-                className="chatbot-header"
-                style={{
-                    padding: '16px',
-                    borderBottom: '1px solid #f0f0f0',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    background: '#1890ff',
-                    color: 'white',
+        <>
+            {/* Backdrop Overlay */}
+            <div 
+                className={`chatbot-backdrop ${isVisible ? 'visible' : ''}`}
+                onClick={handleClose}
+            />
+
+            {/* ChatBot Card */}
+            <Card
+                ref={chatCardRef}
+                className={`chatbot-card ${isVisible ? 'visible' : ''}`}
+                styles={{
+                    body: {
+                        padding: 0,
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    },
                 }}
             >
-                <Space>
-                    <Avatar
-                        icon={<AnimatedBotIcon size={28} />}
-                        style={{
-                            background: 'linear-gradient(135deg, #d3d8f0ff 0%, #eef0e9ff 100%)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center'
-                        }}
-                        size={40}
+                {/* Swipe Indicator (Mobile only) */}
+                <div className="swipe-indicator" />
+
+                {/* Header */}
+                <div
+                    className="chatbot-header"
+                    style={{
+                        padding: '16px',
+                        borderBottom: '1px solid #f0f0f0',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        background: '#1890ff',
+                        color: 'white',
+                        cursor: 'grab',
+                    }}
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
+                    onTouchEnd={handleTouchEnd}
+                >
+                    <Space>
+                        <Avatar
+                            icon={<AnimatedBotIcon size={28} />}
+                            style={{
+                                background: 'linear-gradient(135deg, #d3d8f0ff 0%, #eef0e9ff 100%)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                            size={40}
+                        />
+                        <Text strong style={{ color: 'white', fontSize: 16 }}>
+                            AI Assistant
+                        </Text>
+                    </Space>
+                    <Button
+                        type="text"
+                        icon={<CloseOutlined />}
+                        onClick={handleClose}
+                        style={{ color: 'white' }}
                     />
-                    <Text strong style={{ color: 'white', fontSize: 16 }}>
-                        AI Assistant
-                    </Text>
-                </Space>
-                <Button
-                    type="text"
-                    icon={<CloseOutlined />}
-                    onClick={onClose}
-                    style={{ color: 'white' }}
-                />
-            </div>
+                </div>
 
             {/* Messages */}
             <div
@@ -211,6 +264,42 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
             {/* Animations & Responsive Styles */}
             <style jsx>{`
+                /* Backdrop Overlay */
+                :global(.chatbot-backdrop) {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: rgba(0, 0, 0, 0.5);
+                    z-index: 999;
+                    opacity: 0;
+                    visibility: hidden;
+                    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                                visibility 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    backdrop-filter: blur(4px);
+                    -webkit-backdrop-filter: blur(4px);
+                }
+
+                :global(.chatbot-backdrop.visible) {
+                    opacity: 1;
+                    visibility: visible;
+                }
+
+                /* Swipe Indicator */
+                :global(.swipe-indicator) {
+                    display: none;
+                    width: 40px;
+                    height: 4px;
+                    background: rgba(255, 255, 255, 0.3);
+                    border-radius: 2px;
+                    margin: 8px auto 0;
+                    position: absolute;
+                    top: 0;
+                    left: 50%;
+                    transform: translateX(-50%);
+                }
+
                 /* Responsive Styles */
                 :global(.chatbot-card) {
                     position: fixed;
@@ -225,16 +314,15 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     flex-direction: column;
                     border-radius: 16px;
                     overflow: hidden;
-                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                    transform: translateY(20px);
+                    opacity: 0;
+                    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 }
 
-                /* Prevent body scroll when chatbot is open on mobile */
-                @media (max-width: 639px) {
-                    body:has(.chatbot-card) {
-                        overflow: hidden;
-                        position: fixed;
-                        width: 100%;
-                    }
+                :global(.chatbot-card.visible) {
+                    transform: translateY(0);
+                    opacity: 1;
                 }
 
                 /* Laptop အသေး (1024px - 1366px) */
@@ -272,20 +360,38 @@ export default function ChatBot({ onClose }: ChatBotProps) {
 
                 /* Mobile Portrait (< 640px) - Full Screen Experience */
                 @media (max-width: 639px) {
+                    :global(.chatbot-backdrop) {
+                        backdrop-filter: blur(0);
+                        -webkit-backdrop-filter: blur(0);
+                        background: rgba(0, 0, 0, 0.3);
+                    }
+
+                    :global(.swipe-indicator) {
+                        display: block;
+                    }
+
                     :global(.chatbot-card) {
                         width: 100vw;
                         height: 100vh;
+                        height: 100dvh; /* Dynamic viewport height for mobile */
                         max-height: 100vh;
+                        max-height: 100dvh;
                         right: 0;
                         left: 0;
                         bottom: 0;
                         top: 0;
                         border-radius: 0;
                         box-shadow: none;
+                        transform: translateY(100%);
+                    }
+
+                    :global(.chatbot-card.visible) {
+                        transform: translateY(0);
                     }
 
                     :global(.chatbot-header) {
-                        padding: 12px 16px !important;
+                        padding: max(12px, env(safe-area-inset-top)) 16px 12px !important;
+                        padding-top: calc(max(12px, env(safe-area-inset-top)) + 8px) !important;
                     }
 
                     :global(.chatbot-messages) {
@@ -295,6 +401,12 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     :global(.chatbot-input) {
                         padding: 12px !important;
                         padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
+                    }
+
+                    /* Prevent pull-to-refresh */
+                    :global(.chatbot-messages) {
+                        overscroll-behavior: contain;
+                        -webkit-overflow-scrolling: touch;
                     }
                 }
 
@@ -361,23 +473,38 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                     :global(.chatbot-messages) {
                         -webkit-overflow-scrolling: touch;
                         scroll-behavior: smooth;
+                        overscroll-behavior-y: contain;
                     }
 
                     /* Better touch targets */
                     :global(.ant-btn) {
                         min-height: 44px;
                         min-width: 44px;
+                        touch-action: manipulation;
                     }
 
                     /* Larger input area */
                     :global(.ant-input) {
                         font-size: 16px !important;
                         padding: 10px 12px !important;
+                        touch-action: manipulation;
                     }
 
                     /* Prevent zoom on input focus */
                     :global(.ant-input:focus) {
                         font-size: 16px !important;
+                    }
+
+                    /* Optimize animations for mobile */
+                    :global(.chatbot-card),
+                    :global(.chatbot-backdrop) {
+                        will-change: transform, opacity;
+                    }
+
+                    /* Better tap highlight */
+                    :global(.ant-btn),
+                    :global(.message-bubble) {
+                        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
                     }
                 }
 
@@ -575,7 +702,26 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 :global(.table-wrapper table tbody tr:last-child td) {
                     border-bottom: none;
                 }
+                /* Performance optimizations */
+                @media (prefers-reduced-motion: reduce) {
+                    :global(.chatbot-card),
+                    :global(.chatbot-backdrop) {
+                        transition: none !important;
+                    }
+                }
+
+                /* Landscape mode optimization */
+                @media (max-width: 639px) and (orientation: landscape) {
+                    :global(.chatbot-card) {
+                        height: 100vh;
+                    }
+
+                    :global(.chatbot-messages) {
+                        max-height: calc(100vh - 140px);
+                    }
+                }
             `}</style>
         </Card>
+        </>
     );
 }
