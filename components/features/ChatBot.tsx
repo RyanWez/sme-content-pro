@@ -1,14 +1,13 @@
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
-import { Card, Input, Button, Avatar, Space, Typography } from 'antd';
+import { Card, Input, Button, Avatar, Space } from 'antd';
 import { SendOutlined, CloseOutlined, UserOutlined } from '@ant-design/icons';
 import AnimatedBotIcon from '../ui/AnimatedBotIcon';
 import { useOllamaChat } from '@/hooks/useOllamaChat';
 import { parseMarkdown } from '@/lib/ollama/markdown';
 
 const { TextArea } = Input;
-const { Text } = Typography;
 
 interface ChatBotProps {
     onClose: () => void;
@@ -168,9 +167,9 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                             }}
                             size={40}
                         />
-                        <Text strong style={{ color: 'white', fontSize: 16, userSelect: 'none' }}>
+                        <span style={{ color: 'white', fontSize: 16, fontWeight: 600, userSelect: 'none' }}>
                             AI Assistant
-                        </Text>
+                        </span>
                     </Space>
                     <Button
                         type="text"
@@ -240,6 +239,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                     className="message-bubble"
                                     style={{
                                         maxWidth: 'calc(100% - 56px)',
+                                        minWidth: '60px',
+                                        width: 'fit-content',
                                         padding: '10px 14px',
                                         borderRadius: 8,
                                         backgroundColor: message.sender === 'user' ? '#1890ff' : 'white',
@@ -256,7 +257,8 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                                     }}
                                                     style={{
                                                         color: 'black',
-                                                        wordBreak: 'break-word',
+                                                        overflowWrap: 'break-word',
+                                                        wordWrap: 'break-word',
                                                     }}
                                                 />
                                             ) : (
@@ -268,7 +270,16 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                                             )}
                                         </>
                                     ) : (
-                                        <Text style={{ color: 'white' }}>{message.text}</Text>
+                                        <span style={{
+                                            color: 'white',
+                                            display: 'inline-block',
+                                            wordBreak: 'normal',
+                                            overflowWrap: 'anywhere',
+                                            whiteSpace: 'pre-wrap',
+                                            minWidth: 'fit-content',
+                                        }}>
+                                            {message.text}
+                                        </span>
                                     )}
                                 </div>
                             </div>
@@ -695,8 +706,25 @@ export default function ChatBot({ onClose }: ChatBotProps) {
                 /* Base font size */
                 :global(.ant-card-body) {
                     font-size: 14px;
-                    word-wrap: break-word;
                     overflow-wrap: break-word;
+                    word-wrap: break-word;
+                    word-break: normal;
+                }
+
+                /* Message bubble text wrapping */
+                :global(.message-bubble) {
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
+                    word-break: normal;
+                    hyphens: auto;
+                }
+
+                :global(.message-bubble p),
+                :global(.message-bubble span),
+                :global(.message-bubble div) {
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
+                    word-break: normal;
                 }
 
                 /* Better spacing between elements */
